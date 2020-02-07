@@ -9,7 +9,7 @@ public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		// TODO Auto-generated method stub
-		Picture img1 = new Picture(2,6,13,48,0,5.5,11);
+		Picture img1 = new Picture(2,7,14,10,0,3,6);
 		double decangle = SolarMath.calcdeclinationangle(img1.date);
 		double sunelevation = SolarMath.calcsunelevation(img1.height, img1.shadowlength);
 		ArrayList<Point> trace1 = SolarMath.Trace(decangle, sunelevation, img1.time, img1.date);

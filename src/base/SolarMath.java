@@ -1,6 +1,7 @@
 package base;
 
 import java.awt.Point;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class SolarMath {
@@ -31,6 +32,8 @@ public class SolarMath {
 	public static ArrayList<Point> Trace(double declinationangle, double sunelevation, double time, double date){
 		ArrayList<Point> trace = new ArrayList<Point>();
 		double lhs = Math.sin(sunelevation);
+
+		System.out.println("lhs \t rhs \t  longitude latitude");
 		for(int lon = -180; lon <= 180; lon++) {
 			for(int lat = -90; lat <= 90; lat++) {
 				double rhs = Math.sin(declinationangle)*Math.sin(lat)+
@@ -38,8 +41,11 @@ public class SolarMath {
 							 Math.cos(15*(time-(12*lon/Math.PI)-12));
 							 //attempt to calculate solar time
 							 //Math.cos(15*(calcsolartime(lon, date, time)-12));
-				System.out.println(lhs + " " + rhs);
-				if(lhs-rhs < 0.0035 && lhs-rhs > -0.0035) trace.add(new Point(lon,lat));
+				if(lhs-rhs < 0.005 && lhs-rhs > -0.005) {
+					trace.add(new Point(lon,lat));
+					DecimalFormat ft = new DecimalFormat("#.######");
+					System.out.println(ft.format(lhs) + " " + ft.format(rhs) + "	" + lon + " " + lat);
+				}
 			}
 		}
     return trace;
