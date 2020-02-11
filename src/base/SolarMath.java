@@ -6,19 +6,21 @@ import java.util.ArrayList;
 
 public class SolarMath {
 	public static double calcdeclinationangle(double date) {
-		//solarcalc pdf
-		double A = 23.45*Math.sin(((date+284)*(360/365)));
 		//determining loaction based shadows pdf
-		double B = (-0.4092797)*Math.cos(((2*Math.PI)/365)*(date+10));
+		double A = (-0.4092797)*Math.cos(((2*Math.PI)/365)*(date+10));
+		//solarcalc pdf
+		double B = (23.45*Math.sin(((date+284)*(360/365))));
 		//solar geo pdf
 		double C = Math.asin(0.39795*Math.cos(0.98563*(date-173)));
-		//solargeo2.0
-		double D = 0.4093*Math.sin((2*Math.PI*(date-81))/368);
+
+		System.out.println("dec " + A);
 		return A;
 	}
 	
 	public static double calcsunelevation(double height, double shadowlength) {
-		return Math.atan(height/shadowlength);
+		double angle = Math.atan(height/shadowlength);
+		System.out.println("angle " + angle);
+		return angle;
 	}
 	
 	public static double calcsolartime(double longitude, double date, double time) {
@@ -32,19 +34,20 @@ public class SolarMath {
 	public static ArrayList<Point> Trace(double declinationangle, double sunelevation, double time, double date){
 		ArrayList<Point> trace = new ArrayList<Point>();
 		double lhs = Math.sin(sunelevation);
-
-		System.out.println("lhs \t rhs \t  longitude latitude");
+		int count = 0;
+		System.out.println("pt lhs \t  rhs \t  longitude latitude");
 		for(int lon = -180; lon <= 180; lon++) {
 			for(int lat = -90; lat <= 90; lat++) {
 				double rhs = Math.sin(declinationangle)*Math.sin(lat)+
 						     Math.cos(declinationangle)*Math.cos(lat)*
-							 Math.cos(15*(time-(12*lon/Math.PI)-12));
+							 Math.cos(15*(time-((12*lon)/Math.PI)-12));
 							 //attempt to calculate solar time
 							 //Math.cos(15*(calcsolartime(lon, date, time)-12));
-				if(lhs-rhs < 0.005 && lhs-rhs > -0.005) {
+				if(lhs-rhs < 0.001 && lhs-rhs > -0.001) {
 					trace.add(new Point(lon,lat));
+					count++;
 					DecimalFormat ft = new DecimalFormat("#.######");
-					System.out.println(ft.format(lhs) + " " + ft.format(rhs) + "	" + lon + " " + lat);
+					System.out.println(count + " " + ft.format(lhs) + " " + ft.format(rhs) + "	" + lon + " " + lat);
 				}
 			}
 		}

@@ -15,7 +15,9 @@ case $1 in
 
       cd src/base
 
-      javac -classpath ".:${THE_CLASSPATH}" $PROGRAM_FILE $FILE1 $FILE2
+      javac $PROGRAM_FILE $FILE1 $FILE2
+
+      mv *.class ../../bin/base/
 
       if [ $? -eq 0 ]
       then
@@ -42,7 +44,9 @@ case $1 in
 
       cd src/base
 
-      javac -classpath ".:${THE_CLASSPATH}" $PROGRAM_FILE $FILE1 $FILE2
+      javac $PROGRAM_FILE $FILE1 $FILE2
+
+      mv *.class ../../bin/base/ 
 
       if [ $? -eq 0 ]
       then
@@ -50,8 +54,8 @@ case $1 in
       fi
 
       echo "running program"
-
-      cd bin/base
+      
+      cd ../../bin/base
    
       jar cvf ImageBasedLocator.jar $PROGRAM_CLASS $CLASS1 $CLASS2
 
@@ -61,6 +65,7 @@ case $1 in
 
       exec gnuplot --persist gnuscript
       shift;;
+      
 esac
 
 

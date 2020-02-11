@@ -14,7 +14,7 @@ public class Main {
 		double sunelevation = SolarMath.calcsunelevation(img1.height, img1.shadowlength);
 		ArrayList<Point> trace1 = SolarMath.Trace(decangle, sunelevation, img1.time, img1.date);
 		
-
+		System.out.println(Math.sin(Math.PI/2) + " " + Math.sin(90));
 		PrintWriter gnu = new PrintWriter("./src/gnuscript");
 		gnu.println("#first trace");
 		gnu.println("set xrange [-180:180]");
@@ -31,6 +31,7 @@ public class Main {
 		gnu.println("set grid ytics lt 0 lw 1 lc rgb \"#bbbbbb\"\n" + 
 				    "set grid xtics lt 0 lw 1 lc rgb \"#bbbbbb\"");
 		gnu.println("plot 'trace1.dat' with points linestyle 2");
+
 		PrintWriter t1 = new PrintWriter("./src/trace1.dat");
 		t1.println("#x y");
 		for(int i = 0; i < trace1.size(); i++) {

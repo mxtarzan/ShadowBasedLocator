@@ -14,7 +14,7 @@ public class Picture {
 			totalmonthdays += months[i-1];
 		}
 		date = d + totalmonthdays;
-		time = hours + minutes/24 + ((seconds/60)/24);
+		time = hours + minutes/60/24 + ((seconds/60)/60/24);
 		height = h;
 		shadowlength = sl;
 	}
