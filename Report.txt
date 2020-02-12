@@ -1,0 +1,37 @@
+Garrett Tarczuk
+Space Ship Shooter
+
+Difficulties I ran into:
+  -Absolute boxes, these required simple cosine and 
+sine usage that I needed to refresh myself on.
+  -deleting objects in objectList, for a while I was crashing 
+becasue I was deleting in a for loop incorrectly. Now i have 
+a deletedobject list that i clear and fill each update with objects 
+that at the end of update get removed from objectList_
+
+Structure:
+  -Ship inharits the functions of GraphicObject, the constructor was modified
+to support lives, score, and health
+  -missle inharits graphic object, and is recycled from box because box had most
+of the criteria from missle.
+  -astroids are just animatedboxes
+
+Completed:
+  -To the best of my knowledge everything works,
+-a,w,d for movement of the ship
+-e for absolut boxes
+-r for relative boxes
+-' ' for missles
+-c for cylinder world
+-v for sphere world
+-b for box world
+-f for referance frame
+
+astroids have three sizes, large will kill the ship by one life,
+small and medium will damage ship, large astroid become medium astroids, which 
+become small astroids. at 50 and lest health the ship looses the ablity to use
+thrusters and can only shoot and rotate.
+
+sphere world was implemented
+
+damage, lives, and score were also implemented
