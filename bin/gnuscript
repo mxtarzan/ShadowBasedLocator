@@ -4,17 +4,9 @@ set ylabel "Latitude"
 set xlabel "Longitude"
 set size ratio -1
 
-set style line 1 \
-    linecolor rgb '#ffffff' \
-    linetype 1 linewidth 2 \
-    pointtype 2 pointsize 0.75
-set style line 2 \
-    linecolor rgb '#ad00ff' \
-    linetype 1 linewidth 2 \
-    pointtype 1 pointsize 0.75
 set encoding utf8
 
 set minussign
 set grid ytics lt 0 lw 1 lc rgb "#bbbbbb"
 set grid xtics lt 0 lw 1 lc rgb "#bbbbbb"
-plot 'trace1.dat' with points linestyle 1, 'trace9.dat' with points linestyle 2
+plot 'Earth.jpg', 'ActualLocation.dat'  with points linecolor rgb '#000000' pointtype 1 pointsize 0.25, 'Data9.dat'  with points linecolor rgb		  '#ff0000'  pointtype 2 pointsize 0.25, 'Data10.dat' with points linecolor rgb 		  '#00ff00'  pointtype 4 pointsize 0.25

@@ -30,7 +30,7 @@ public class SolarMath {
 						     Math.cos(declinationangle)*Math.cos((lat*Math.PI/180))*
 							 Math.cos(wFunc(time, lon*Math.PI/180));
 				double eq = lhs-rhs;
-				if(eq < 0.005 && eq > -0.005) {
+				if(eq < 0.01 && eq > -0.01) {
 					trace.add(new Point(lat,lon));
 				}
 			}

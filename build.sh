@@ -9,7 +9,7 @@ FILE3=Muiltithread.java
 PROGRAM_CLASS=Main.class
 CLASS1=Picture.class
 CLASS2=SolarMath.class
-CLASS3=Multthread.class
+CLASS3=Multithread.class
 
 case $1 in
    -c)

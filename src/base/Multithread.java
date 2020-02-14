@@ -17,7 +17,7 @@ public class Multithread extends Thread{
 			double sunelevation = SolarMath.sunelevationFunc(img.height, img.shadowlength);
 			ArrayList<Point> trace1 = SolarMath.Trace(decangle, sunelevation, img.time, img.date);
 			
-			PrintWriter t1 = new PrintWriter("./src/trace"+Thread.currentThread().getId()+".dat");
+			PrintWriter t1 = new PrintWriter("./src/Data"+Thread.currentThread().getId()+".dat");
 			for(int i = 0; i < trace1.size(); i++) {
 				t1.println((trace1.get(i).x) + " " + (trace1.get(i).y));
 			}
