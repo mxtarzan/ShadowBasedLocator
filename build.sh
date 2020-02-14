@@ -4,10 +4,12 @@ THE_CLASSPATH=
 PROGRAM_FILE=Main.java
 FILE1=Picture.java 
 FILE2=SolarMath.java
+FILE3=Muiltithread.java
 
 PROGRAM_CLASS=Main.class
 CLASS1=Picture.class
 CLASS2=SolarMath.class
+CLASS3=Multthread.class
 
 case $1 in
    -c)
@@ -15,7 +17,7 @@ case $1 in
 
       cd src/base
 
-      javac $PROGRAM_FILE $FILE1 $FILE2
+      javac $PROGRAM_FILE $FILE1 $FILE2 $FILE3
 
       mv *.class ../../bin/base/
 
@@ -30,7 +32,7 @@ case $1 in
 
       cd bin/base
    
-      jar cvf ImageBasedLocator.jar $PROGRAM_CLASS $CLASS1 $CLASS2
+      jar cvf ImageBasedLocator.jar $PROGRAM_CLASS $CLASS1 $CLASS2 $CLASS3
 
       java -jar ImageBasedLocator.jar
 
@@ -44,7 +46,7 @@ case $1 in
 
       cd src/base
 
-      javac $PROGRAM_FILE $FILE1 $FILE2
+      javac $PROGRAM_FILE $FILE1 $FILE2 $FILE3
 
       mv *.class ../../bin/base/ 
 
@@ -57,7 +59,7 @@ case $1 in
       
       cd ../../bin/base
    
-      jar cvf ImageBasedLocator.jar $PROGRAM_CLASS $CLASS1 $CLASS2
+      jar cvf ImageBasedLocator.jar $PROGRAM_CLASS $CLASS1 $CLASS2 $CLASS3
 
       java -jar ImageBasedLocator.jar
 

@@ -1,17 +1,20 @@
-#first trace
 set xrange [-180:180]
 set yrange [-90:90]
 set ylabel "Latitude"
 set xlabel "Longitude"
 set size ratio -1
 
-set style line 2 \
-    linecolor rgb '#dd181f' \
+set style line 1 \
+    linecolor rgb '#ffffff' \
     linetype 1 linewidth 2 \
-    pointtype 5 pointsize 1
+    pointtype 2 pointsize 0.75
+set style line 2 \
+    linecolor rgb '#ad00ff' \
+    linetype 1 linewidth 2 \
+    pointtype 1 pointsize 0.75
 set encoding utf8
 
 set minussign
 set grid ytics lt 0 lw 1 lc rgb "#bbbbbb"
 set grid xtics lt 0 lw 1 lc rgb "#bbbbbb"
-plot 'trace9.dat' with points linestyle 2
+plot 'trace1.dat' with points linestyle 1, 'trace9.dat' with points linestyle 2
