@@ -35,6 +35,6 @@ public class SolarMath {
 				}
 			}
 		}
-    return trace;
+		return trace;
 	}
 }
