@@ -4,7 +4,7 @@ THE_CLASSPATH=
 PROGRAM_FILE=Main.java
 FILE1=Picture.java 
 FILE2=SolarMath.java
-FILE3=Muiltithread.java
+FILE3=Multithread.java
 
 PROGRAM_CLASS=Main.class
 CLASS1=Picture.class

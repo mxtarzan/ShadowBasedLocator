@@ -13,8 +13,8 @@ Java IDE is not needed to compile or execute the java code. (You may if you pref
 
 How to run the program:
 
-   ./build.sh -c will compile the java code
+`   ./build.sh -c will compile the java code '
 
-   ./build.sh -x will execute the java jar file
+'   ./build.sh -x will execute the java jar file   '
 
-   ./build.sh -cx will compile and execute
+'   ./build.sh -cx will compile and execute '
