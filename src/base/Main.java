@@ -1,6 +1,7 @@
 package base;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -19,10 +20,10 @@ public class Main {
 		gnu.println("set minussign");
 		gnu.println("set grid ytics lt 0 lw 1 lc rgb \"#bbbbbb\"\n" + 
 				      "set grid xtics lt 0 lw 1 lc rgb \"#bbbbbb\"");
-		gnu.println("plot 'Data9.dat'  	     with points linecolor rgb '#ff0000' pointtype 2 pointsize 0.25," 
-					      + "'Data10.dat' 		  with points linecolor rgb '#00ff00' pointtype 3 pointsize 0.25,"
-					      + "'Data11.dat' 		  with points linecolor rgb '#0000ff' pointtype 4 pointsize 0.25,"
-					     + "'ActualLocation.dat' with points linecolor rgb '#000000' pointtype 1 pointsize 0.25");
+		gnu.println("plot './src/Data17.dat'  	     with points linecolor rgb '#ff0000'  pointtype 2 pointsize 0.25," 
+					   + "'./src/Data18.dat' 		 with points linecolor rgb '#00ff00'  pointtype 3 pointsize 0.25,"
+					   + "'./src/Data19.dat' 		 with points linecolor rgb '#0000ff'  pointtype 4 pointsize 0.25,"
+					   + "'./src/ActualLocation.dat' with points linecolor rgb '#000000' pointtype 1 pointsize 0.25");
 		gnu.close();
 
 
@@ -32,14 +33,21 @@ public class Main {
       
       SetupGnuplotFile();
       
-      Window F = new Window();
+      Frontend F = new Frontend();
       while(F.isOpen) {
           System.out.print("");
       }
-      Picture data1 = new Picture(2,7,19,10,0,3,6);
-      Picture data2 = new Picture(2,14,19,42,0,6,13);
-      Picture data3 = new Picture(2,14,21,30,0,2.5,8.75);
+      /*
+       * realdata
+       * 3,6,7:10,2,7
+       * 6, 13, 7:45, 2, 14
+       * 2.5, 8.75, 9:30, 2, 14
+      */
 
+      Picture data1 = new Picture(F.data1[3], F.data1[2], F.data1[0], F.data1[1]);
+      Picture data2 = new Picture(F.data2[3], F.data2[2], F.data2[0], F.data2[1]);
+      Picture data3 = new Picture(F.data3[3], F.data3[2], F.data3[0], F.data3[1]);
+      
       Multithread thread1 = new Multithread(data1);
       thread1.start();
       Multithread thread2 = new Multithread(data2);
@@ -64,6 +72,12 @@ public class Main {
       location.PrintLocation();
       Point pt = location.getlocation();
       System.out.println(pt.x + " " + pt.y);
+      try {
+		Runtime.getRuntime().exec("./gnuplot.sh -x");
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	}
 
 }

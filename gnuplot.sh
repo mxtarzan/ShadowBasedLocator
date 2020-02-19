@@ -3,7 +3,7 @@
 case $1 in
    -x)
       echo "Running Gnuplot..."
-      exec gnuplot --persist gnuscript
+      exec gnuplot --persist ./src/gnuscript
       shift;;
 esac
 
