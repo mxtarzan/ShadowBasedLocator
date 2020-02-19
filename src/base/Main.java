@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
 
@@ -28,54 +27,44 @@ public class Main {
 
 
    }
-   //@SuppressWarnings("deprecation")
+
    public static void main(String[] args) throws FileNotFoundException{
       
       SetupGnuplotFile();
-      /*JFrame frame = new JFrame("Shadow Based Locator");
-      frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-      frame.setLayout(new FlowLayout());
-      frame.setSize(500,250);
-      frame.setVisible(true);
-      frame.show(); 
-      */     
-      Window F = new Window();      
-	   try {
-            System.out.println("Start...");
-            TimeUnit.MINUTES.sleep(1);
-            System.out.println("End...");
-      } 
-      catch (InterruptedException e) {
-            System.err.format("IOException: %s%n", e);
+      
+      Window F = new Window();
+      while(F.isOpen) {
+          System.out.print("");
       }
       Picture data1 = new Picture(2,7,19,10,0,3,6);
-		Picture data2 = new Picture(2,14,19,42,0,6,13);
-		Picture data3 = new Picture(2,14,21,30,0,2.5,8.75);
+      Picture data2 = new Picture(2,14,19,42,0,6,13);
+      Picture data3 = new Picture(2,14,21,30,0,2.5,8.75);
 
-		Multithread thread1 = new Multithread(data1);
-		thread1.start();
-		Multithread thread2 = new Multithread(data2);
-		thread2.start();
-		Multithread thread3 = new Multithread(data3);
-		thread3.start();
+      Multithread thread1 = new Multithread(data1);
+      thread1.start();
+      Multithread thread2 = new Multithread(data2);
+      thread2.start();
+      Multithread thread3 = new Multithread(data3);
+      thread3.start();
 	    
-		try { 
-	    	thread1.join();
-	    	thread2.join(); 
-	    	thread3.join(); 
-	    } 
-	    catch (Exception e) { 
-        	System.out.println(e); 
-	    } 
+      try { 
+    	 thread1.join();
+    	 thread2.join(); 
+    	 thread3.join(); 
+      } 
+      catch (Exception e) { 
+    	  System.out.println(e); 
+      } 
 		
-		ArrayList<Point> a = thread1.trace;
-		ArrayList<Point> b = thread2.trace;
-		ArrayList<Point> c = thread3.trace;
+      ArrayList<Point> a = thread1.trace;
+      ArrayList<Point> b = thread2.trace;
+      ArrayList<Point> c = thread3.trace;
 		
-		LocationApprox location = new LocationApprox(a,b,c);
+      LocationApprox location = new LocationApprox(a,b,c);
       location.PrintLocation();
       Point pt = location.getlocation();
-		System.out.println(pt.x + " " + pt.y);
-		}
+      System.out.println(pt.x + " " + pt.y);
+	}
 
 }
+
