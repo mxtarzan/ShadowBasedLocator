@@ -15,7 +15,7 @@ public class LocationApprox {
 		return l1+l2+l3;		  
 	}
 
-   public void PrintLocation() throws FileNotFoundException{
+   public void PrintLocationToFile() throws FileNotFoundException{
       PrintWriter t = new PrintWriter("./src/ActualLocation.dat");
 		for(int lon = -180; lon <=180; lon++) {
 			t.println(lon + " " + location.x);

@@ -1,38 +1,147 @@
 package base;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 public class Frontend{
 	
-   public double data1[];
-   public double data2[];
-   public double data3[];
+   public ArrayList<double[]> data = new ArrayList<double[]>();
    
    static String Times[];
    static String DatesM[];
    static String DatesD[];
-   
+
+   JLabel picLabel;
+ 
    public boolean isOpen;
+
+   public Frontend() throws IOException {
+	   
+	   SetupFrame();
+	   
+	  JFrame frame = new JFrame();
+
+	  JFrame.setDefaultLookAndFeelDecorated(true); 
+      frame.setTitle("Shadow Based Locator");
+	  
+	  GridBagConstraints grid = new GridBagConstraints();
+	  grid.fill = GridBagConstraints.VERTICAL;
+	  JPanel pane = new JPanel();
+	  
+	  JLabel Title = new JLabel("Please get measurements at three different times");
+      grid.gridx = 0;
+      grid.gridy = 0;
+      pane.add(Title, grid);
+      
+      JLabel label = new JLabel("Input:                       Time                Month      Day");
+      grid.gridx = 0;
+      grid.gridy = 1;
+      pane.add(label, grid);
+      
+      JLabel m1 = new JLabel("When it was taken: ");
+      grid.gridx = 0;
+      grid.gridy =2;
+      pane.add(m1, grid);
+      
+      JComboBox<String> t1 = new JComboBox<String>(Times);
+      grid.gridx = 1;
+      grid.gridy = 2;
+      pane.add(t1, grid);
+      
+      JComboBox<String> dm1 = new JComboBox<String>(DatesM);
+      grid.gridx = 2;
+      grid.gridy = 2;
+      pane.add(dm1, grid);
+      
+      JComboBox<String> dd1 = new JComboBox<String>(DatesD);
+      grid.gridx = 3;
+      grid.gridy = 2;
+      pane.add(dd1, grid);
+      
+      JButton storeB = new JButton("Store Data");
+      storeB.addActionListener(new ActionListener() {	
+    	  public void actionPerformed(ActionEvent e){  
+    		  double[] info = new double[4];
+    		  info[0] = datetodouble((String)dm1.getSelectedItem(), (String)dd1.getSelectedItem());
+    		  info[1] = timetodouble((String)t1.getSelectedItem());
+    		  info[2] = 1;
+    		  info[3] = 2;
+    		  data.add(info);
+    		  pane.remove(picLabel);
+    		  pane.updateUI();
+    		  grid.gridy -= 1;
+      	  }
+   	  });
+      grid.gridx = 0;
+      grid.gridy = 3;
+      pane.add(storeB, grid);     
+      
+      JButton filesystemB = new JButton("Import Image");
+      filesystemB.addActionListener(new ActionListener() {	
+    	  @SuppressWarnings("deprecation")
+		public void actionPerformed(ActionEvent e){  
+    		   JFileChooser j = new JFileChooser(); 
+    		   j.showSaveDialog(null);
+    		   BufferedImage myPicture = null;
+    		   try {
+				myPicture = ImageIO.read(new File(j.getSelectedFile().toString()));
+    		   } catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+    		   }
+    		   picLabel = new JLabel(new ImageIcon(myPicture));
+    		   grid.gridy += 1;
+    		   pane.add(picLabel, grid);
+     		   pane.updateUI();
+      	  }
+   	  });
+      grid.gridx = 1;
+      grid.gridy = 3;
+      pane.add(filesystemB);
+      
+      JButton exitB = new JButton("Done");
+      exitB.addActionListener(new ActionListener() {	
+    	  public void actionPerformed(ActionEvent e){ 
+    		  double[] info = new double[4];
+    		  info[0] = 38;
+    		  info[1] = 19.17;
+    		  info[2] = 3;
+    		  info[3] = 6;
+    		  data.add(info);
+    		  info = new double[4];
+    		  info[0] = 45;
+    		  info[1] = 19.75;
+    		  info[2] = 6;
+    		  info[3] = 13;
+    		  data.add(info);
+    		  info = new double[4];
+    		  info[0] = 38;
+    		  info[1] = 21.5;
+    		  info[2] = 2.5;
+    		  info[3] = 8.75;
+    		  data.add(info);
+    		  isOpen = false;
+    		  frame.hide();
+      	  }
+   	  });
+      grid.gridx = 2;
+      grid.gridy = 3;
+      pane.add(exitB);
+
+      frame.add(pane);
+
+      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.setSize(350, 150);
+      frame.setResizable(true);
+      frame.setVisible(true);  
+   } 
    
-   double timetodouble(String time) {
-		time = time.substring(0, time.length()-2);
-	    String[] result = time.split(":");
-	    double newtime = Double.parseDouble(result[0]) + Double.parseDouble(result[1])/60;
-	    return newtime;
-   }
-   double datetodouble(String m, String d) {
-	   int months[]= {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-	   int totalmonthdays = 0;
-		for(int i = 1; i < Double.parseDouble(m); i++) {
-			totalmonthdays += months[i-1];
-		}
-		double date = Double.parseDouble(d) + totalmonthdays;
-		return date;
-   }
-   
-   public Frontend() {
+   void SetupFrame() {
 	   Times = new String[24*12];
 	   DatesM = new String[12];
 	   DatesD = new String[31];
@@ -77,130 +186,23 @@ public class Frontend{
 		   DatesD[count] = Integer.toString(i+1);
 		   count++;
        }
-	   
-      JFrame frame = new JFrame("Shadow Based Locator");
-
-      JPanel top = new JPanel();
-      JPanel info = new JPanel();
-      JPanel ln1 = new JPanel();
-      JPanel ln2 = new JPanel();
-      JPanel ln3 = new JPanel();
-      JPanel ln4 = new JPanel();
-      
-      JLabel Title = new JLabel("Please get measurements at three different times");
-      JLabel label = new JLabel("Input:                    Height of object      Length of shadow       Time             Month          Day");
-      JLabel m1 = new JLabel("Measurement 1: ");
-      JLabel m2 = new JLabel("Measurement 2: ");
-      JLabel m3 = new JLabel("Measurement 3: ");
-      JTextField h1 = new JTextField(10);
-      JTextField l1 = new JTextField(10);
-      JComboBox<String> t1 = new JComboBox<String>(Times);
-      JComboBox<String> dm1 = new JComboBox<String>(DatesM);
-      JComboBox<String> dd1 = new JComboBox<String>(DatesD);
-      JTextField h2 = new JTextField(10);
-      JTextField l2 = new JTextField(10);
-      JComboBox<String> t2 = new JComboBox<String>(Times);
-      JComboBox<String> dm2 = new JComboBox<String>(DatesM);
-      JComboBox<String> dd2 = new JComboBox<String>(DatesD);
-      JTextField h3 = new JTextField(10);
-      JTextField l3 = new JTextField(10);
-      JComboBox<String> t3 = new JComboBox<String>(Times);
-      JComboBox<String> dm3 = new JComboBox<String>(DatesM);
-      JComboBox<String> dd3 = new JComboBox<String>(DatesD);
-      
-      JButton b = new JButton("Done");
-      b.addActionListener(new ActionListener() {	
-    	  public void actionPerformed(ActionEvent e){  
-    		  System.out.println("Measurement 1: " + h1.getText() + " " + l1.getText() + " " + t1.getSelectedItem() + " " + dm1.getSelectedItem() + " " + dd1.getSelectedItem());
-    		  System.out.println("Measurement 2: " + h2.getText() + " " + l2.getText() + " " + t2.getSelectedItem() + " " + dm2.getSelectedItem() + " " + dd2.getSelectedItem());
-    		  System.out.println("Measurement 3: " + h3.getText() + " " + l3.getText() + " " + t3.getSelectedItem() + " " + dm3.getSelectedItem() + " " + dd3.getSelectedItem());
-
-    		  data1 = new double[4];
-    		  data2 = new double[4];
-    		  data3 = new double[4];
-    		  
-    		  data1[0] = Double.parseDouble(h1.getText());
-    		  data2[0] = Double.parseDouble(h2.getText());
-    		  data3[0] = Double.parseDouble(h3.getText());
-    		  data1[1] = Double.parseDouble(l1.getText());
-    		  data2[1] = Double.parseDouble(l2.getText());
-    		  data3[1] = Double.parseDouble(l3.getText());
-    		  data1[2] = timetodouble((String)t1.getSelectedItem());
-    		  data2[2] = timetodouble((String)t2.getSelectedItem());
-    		  data3[2] = timetodouble((String)t3.getSelectedItem());
-    		  data1[3] = datetodouble((String)dm1.getSelectedItem(), dd1.getSelectedItem().toString());
-    		  data2[3] = datetodouble((String)dm2.getSelectedItem(), (String)dd2.getSelectedItem());
-    		  data3[3] = datetodouble((String)dm3.getSelectedItem(), (String)dd3.getSelectedItem());
-    		  
-    		  isOpen = false;
-    		  frame.hide();
-      	  }
-   	  });
-      
-      JButton testing = new JButton("Import Data");
-      testing.addActionListener(new ActionListener() {	
-    	  public void actionPerformed(ActionEvent e){  
-    		  data1 = new double[4];
-    		  data2 = new double[4];
-    		  data3 = new double[4];
-    		  
-    		  data1[0] = 3;
-    		  data2[0] = 6;
-    		  data3[0] = 2.5;
-    		  data1[1] = 6;
-    		  data2[1] = 13;
-    		  data3[1] = 8.75;
-    		  data1[2] = 19.1775;
-    		  data2[2] = 19.75;
-    		  data3[2] = 21.5;
-    		  data1[3] = 38;
-    		  data2[3] = 45;
-    		  data3[3] = 45;
-    		  
-    		  isOpen = false;
-    		  frame.hide();
-      	  }
-   	  });
-      
-      top.add(Title);
-      
-      info.add(label);
-      
-      ln1.add(m1);
-      ln1.add(h1);
-      ln1.add(l1);
-      ln1.add(t1);
-      ln1.add(dm1);
-      ln1.add(dd1);
-
-      ln2.add(m2);
-      ln2.add(h2);
-      ln2.add(l2);
-      ln2.add(t2);
-      ln2.add(dm2);
-      ln2.add(dd2);
-
-      ln3.add(m3);
-      ln3.add(h3);
-      ln3.add(l3);
-      ln3.add(t3);
-      ln3.add(dm3);
-      ln3.add(dd3);
-      
-      ln4.add(b);
-      ln4.add(testing);
-      
-      frame.add(top);
-      frame.add(info);
-      frame.add(ln1);
-      frame.add(ln2);
-      frame.add(ln3);
-      frame.add(ln4);
-      
-      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-      frame.setLayout(new FlowLayout());
-      frame.setSize(525,250);
-      frame.setVisible(true);  
-   } 
+   }
+   
+   double timetodouble(String time) {
+		time = time.substring(0, time.length()-2);
+	    String[] result = time.split(":");
+	    double newtime = Double.parseDouble(result[0]) + Double.parseDouble(result[1])/60;
+	    return newtime;
+   }
+   double datetodouble(String m, String d) {
+	   int months[]= {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	   int totalmonthdays = 0;
+		for(int i = 1; i < Double.parseDouble(m); i++) {
+			totalmonthdays += months[i-1];
+		}
+		double date = Double.parseDouble(d) + totalmonthdays;
+		return date;
+   }
+   
 }
 

@@ -10,4 +10,4 @@ set encoding utf8
 set minussign
 set grid ytics lt 0 lw 1 lc rgb "#bbbbbb"
 set grid xtics lt 0 lw 1 lc rgb "#bbbbbb"
-plot './src/Data17.dat'  	     with points linecolor rgb '#ff0000'  pointtype 2 pointsize 0.25,'./src/Data18.dat' 		 with points linecolor rgb '#00ff00'  pointtype 3 pointsize 0.25,'./src/Data19.dat' 		 with points linecolor rgb '#0000ff'  pointtype 4 pointsize 0.25,'./src/ActualLocation.dat' with points linecolor rgb '#000000' pointtype 1 pointsize 0.25
+plot ./src/Data16.dat  	    with points linecolor rgb '#ff0000'  pointtype 2 pointsize 0.25,./src/Data17.dat 		with points linecolor rgb '#00ff00'  pointtype 3 pointsize 0.25,./src/Data18.dat 		with points linecolor rgb '#0000ff'  pointtype 4 pointsize 0.25,'./src/ActualLocation.dat' with points linecolor rgb '#000000' pointtype 1 pointsize 0.25
