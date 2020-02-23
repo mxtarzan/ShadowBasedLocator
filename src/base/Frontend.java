@@ -2,13 +2,18 @@ package base;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
 public class Frontend{
+	
+   JFrame frame;
 	
    public ArrayList<double[]> data = new ArrayList<double[]>();
    
@@ -17,6 +22,10 @@ public class Frontend{
    static String DatesD[];
 
    JLabel picLabel;
+
+   GeneralPath path = null;
+   private boolean drawing = false;
+	private MouseHandler mouseHandler = new MouseHandler();
  
    public boolean isOpen;
 
@@ -24,43 +33,65 @@ public class Frontend{
 	   
 	   SetupFrame();
 	   
-	  JFrame frame = new JFrame();
+	  frame = new JFrame();
 
 	  JFrame.setDefaultLookAndFeelDecorated(true); 
       frame.setTitle("Shadow Based Locator");
 	  
 	  GridBagConstraints grid = new GridBagConstraints();
-	  grid.fill = GridBagConstraints.VERTICAL;
-	  JPanel pane = new JPanel();
+	  //grid.fill = GridBagConstraints.VERTICAL;
+	  JPanel pane = new JPanel(new GridBagLayout());
+	  
+      JLabel spacer = new JLabel(" ");
+      grid.gridx = 0;
+      grid.gridy = 0;
+      pane.add(spacer, grid);
 	  
 	  JLabel Title = new JLabel("Please get measurements at three different times");
       grid.gridx = 0;
-      grid.gridy = 0;
-      pane.add(Title, grid);
-      
-      JLabel label = new JLabel("Input:                       Time                Month      Day");
-      grid.gridx = 0;
       grid.gridy = 1;
-      pane.add(label, grid);
+      grid.gridwidth = 4;
+      pane.add(Title, grid);
+      grid.gridwidth = 1;
+      
+      JLabel label1 = new JLabel("Input:");
+      grid.gridx = 0;
+      grid.gridy = 2;
+      pane.add(label1, grid);
+      
+      JLabel label2 = new JLabel("Time");
+      grid.gridx = 1;
+      grid.gridy = 2;
+      pane.add(label2, grid);
+      
+      JLabel label3 = new JLabel("Month");
+      grid.gridx = 2;
+      grid.gridy = 2;
+      pane.add(label3, grid);
+      
+      JLabel label4 = new JLabel("Day");
+      grid.gridx = 3;
+      grid.gridy = 2;
+      pane.add(label4, grid);
       
       JLabel m1 = new JLabel("When it was taken: ");
       grid.gridx = 0;
-      grid.gridy =2;
+      grid.gridy = 3;
       pane.add(m1, grid);
       
       JComboBox<String> t1 = new JComboBox<String>(Times);
       grid.gridx = 1;
-      grid.gridy = 2;
+      grid.gridy = 3;
       pane.add(t1, grid);
       
       JComboBox<String> dm1 = new JComboBox<String>(DatesM);
       grid.gridx = 2;
-      grid.gridy = 2;
+      grid.gridy = 3;
       pane.add(dm1, grid);
       
       JComboBox<String> dd1 = new JComboBox<String>(DatesD);
       grid.gridx = 3;
-      grid.gridy = 2;
+      grid.gridy = 3;
       pane.add(dd1, grid);
       
       JButton storeB = new JButton("Store Data");
@@ -74,16 +105,15 @@ public class Frontend{
     		  data.add(info);
     		  pane.remove(picLabel);
     		  pane.updateUI();
-    		  grid.gridy -= 1;
+    		  frame.pack();
       	  }
    	  });
       grid.gridx = 0;
-      grid.gridy = 3;
+      grid.gridy = 4;
       pane.add(storeB, grid);     
       
       JButton filesystemB = new JButton("Import Image");
-      filesystemB.addActionListener(new ActionListener() {	
-    	  @SuppressWarnings("deprecation")
+      filesystemB.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e){  
     		   JFileChooser j = new JFileChooser(); 
     		   j.showSaveDialog(null);
@@ -91,18 +121,20 @@ public class Frontend{
     		   try {
 				myPicture = ImageIO.read(new File(j.getSelectedFile().toString()));
     		   } catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
     		   }
     		   picLabel = new JLabel(new ImageIcon(myPicture));
-    		   grid.gridy += 1;
+     		   grid.gridx = 0;
+    		   grid.gridy = 5;
+     	       grid.gridwidth = 4;
     		   pane.add(picLabel, grid);
      		   pane.updateUI();
+     		   frame.pack();
       	  }
    	  });
       grid.gridx = 1;
-      grid.gridy = 3;
-      pane.add(filesystemB);
+      grid.gridy = 4;
+      pane.add(filesystemB, grid);
       
       JButton exitB = new JButton("Done");
       exitB.addActionListener(new ActionListener() {	
@@ -122,23 +154,29 @@ public class Frontend{
     		  info = new double[4];
     		  info[0] = 38;
     		  info[1] = 21.5;
-    		  info[2] = 2.5;
-    		  info[3] = 8.75;
+    		  info[2] = 2.2;
+    		  info[3] = 8.65;
     		  data.add(info);
     		  isOpen = false;
-    		  frame.hide();
+    		  frame.setVisible(false);
       	  }
    	  });
       grid.gridx = 2;
-      grid.gridy = 3;
-      pane.add(exitB);
+      grid.gridy = 4;
+      grid.gridwidth = 2;
+      pane.add(exitB, grid);
 
       frame.add(pane);
 
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-      frame.setSize(350, 150);
+      frame.setSize(350, 125);
+      frame.setMinimumSize(new Dimension(350, 125));
+      frame.pack();
       frame.setResizable(true);
       frame.setVisible(true);  
+
+      frame.addMouseListener(mouseHandler);
+      frame.addMouseMotionListener(mouseHandler);
    } 
    
    void SetupFrame() {
@@ -202,6 +240,37 @@ public class Frontend{
 		}
 		double date = Double.parseDouble(d) + totalmonthdays;
 		return date;
+   }
+   
+   private class MouseHandler extends MouseAdapter {
+
+       @Override
+       public void mousePressed(MouseEvent e) {
+           Point p = e.getPoint(); 
+           if (!drawing) {
+               path = new GeneralPath();
+               path.moveTo(p.x, p.y);
+               drawing = true;
+           } else {
+               path.lineTo(p.x, p.y);
+           }
+
+           frame.repaint();
+       }
+   }
+   
+   protected void paintComponent(Graphics g) {
+       //super.paintComponent(g);
+       Graphics2D g2d = (Graphics2D) g;
+       g2d.setColor(Color.blue);
+       g2d.setRenderingHint(
+               RenderingHints.KEY_ANTIALIASING,
+               RenderingHints.VALUE_ANTIALIAS_ON);
+       g2d.setStroke(new BasicStroke(8,
+               BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+       if (path!=null) {
+           g2d.draw(path);
+       }
    }
    
 }

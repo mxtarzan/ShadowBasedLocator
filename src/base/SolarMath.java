@@ -1,7 +1,6 @@
 package base;
 
-import java.awt.Point;
-import java.text.DecimalFormat;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public class SolarMath {
@@ -21,17 +20,17 @@ public class SolarMath {
 		return time-(12/Math.PI)*longitude;
 	}
 	
-	public static ArrayList<Point> Trace(double declinationangle, double sunelevation, double time, double date){
-		ArrayList<Point> trace = new ArrayList<Point>();
+	public static ArrayList<Point2D> Trace(double declinationangle, double sunelevation, double time, double date){
+		ArrayList<Point2D> trace = new ArrayList<Point2D>();
 		double lhs = Math.sin(sunelevation);
-		for(int lon = -180; lon <= 180; lon++) {
-			for(int lat = -90; lat <= 90; lat++) {
+		for(double lon = -180; lon <= 180; lon+=0.05) {
+			for(double lat = -90; lat <= 90; lat+=0.05) {
 				double rhs = Math.sin(declinationangle)*Math.sin((lat*Math.PI/180))+
 						     Math.cos(declinationangle)*Math.cos((lat*Math.PI/180))*
 							 Math.cos(wFunc(time, lon*Math.PI/180));
 				double eq = lhs-rhs;
-				if(eq < 0.01 && eq > -0.01) {
-					trace.add(new Point(lat,lon));
+				if(eq < 0.00005 && eq > -0.00005) {
+					trace.add(new Point2D.Double(lat,lon));
 				}
 			}
 		}

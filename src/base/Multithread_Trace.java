@@ -1,14 +1,14 @@
 package base;
 
-import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.io.PrintWriter;
 import java.lang.Thread;
 import java.util.ArrayList;
 
-public class Multithread extends Thread{
+public class Multithread_Trace extends Thread{
 	private Picture img;
-	public ArrayList<Point> trace;
-	Multithread(Picture image){
+	public ArrayList<Point2D> trace;
+	Multithread_Trace(Picture image){
 		this.img = image;
 	}
 	
@@ -16,10 +16,10 @@ public class Multithread extends Thread{
 		try {
 			double decangle = SolarMath.declinationFunc(img.date);
 			double sunelevation = SolarMath.sunelevationFunc(img.height, img.shadowlength);
-			ArrayList<Point> t = SolarMath.Trace(decangle, sunelevation, img.time, img.date);
+			ArrayList<Point2D> t = SolarMath.Trace(decangle, sunelevation, img.time, img.date);
 			PrintWriter t1 = new PrintWriter("./src/Data"+Thread.currentThread().getId()+".dat");
 			for(int i = 0; i < t.size(); i++) {
-				t1.println((t.get(i).x) + " " + (t.get(i).y));
+				t1.println((t.get(i).getX()) + " " + (t.get(i).getY()));
 			}
 			t1.close();
 			this.trace = t;
@@ -29,7 +29,7 @@ public class Multithread extends Thread{
 			System.out.println("Exception is caught");
 		}
 	}
-	public ArrayList<Point> getTrace(){
-		return this.trace;
+	public ArrayList<Point2D> getTrace(){
+		return trace;
 	}
 }

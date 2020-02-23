@@ -3,7 +3,7 @@ package base;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public class Main {
@@ -14,19 +14,25 @@ public class Main {
       while(F.isOpen) {
           Thread.yield();
       }
-
+      
+      System.out.println("Gathering info from window");
+      
       ArrayList<Picture> pics = new ArrayList<Picture>();
       for (int i = 0; i < F.data.size(); i++) {
     	  double info[] = F.data.get(i);
     	  pics.add(new Picture(info[0], info[1], info[2], info[3]));
       }
+      
+      System.out.println("Gathered info from window");
 
-      ArrayList<Multithread> threads = new ArrayList<Multithread>();
+      System.out.println("Trace Threads Running");
+      
+      ArrayList<Multithread_Trace> threads = new ArrayList<Multithread_Trace>();
       for (int i = 0; i < pics.size(); i++) {
-    	  threads.add(new Multithread(pics.get(i)));
+    	  threads.add(new Multithread_Trace(pics.get(i)));
     	  threads.get(i).start();
       } 
-      
+     
       try { 
     	  for(int i = 0; i < threads.size(); i++) {
     		  threads.get(i).join();
@@ -36,17 +42,23 @@ public class Main {
     	  System.out.println(e); 
       } 
       
-      ArrayList<Point> a = threads.get(0).trace;
-      ArrayList<Point> b = threads.get(1).trace;
-      ArrayList<Point> c = threads.get(2).trace;
+      System.out.println("Trace Threads Finished");
+       
+      ArrayList<Point2D> a = threads.get(0).trace;
+      ArrayList<Point2D> b = threads.get(1).trace;
+      ArrayList<Point2D> c = threads.get(2).trace;
 		
+      System.out.println("Finding Approx Location");
+      
       LocationApprox location = new LocationApprox(a,b,c);
+
+      System.out.println("Found Approx Location");
       
       location.PrintLocationToFile();
       
-      Point pt = location.getlocation();
+      Point2D pt = location.getlocation();
       
-      System.out.println(pt.x + " " + pt.y);
+      System.out.printf("[%.3f, %.3f]", pt.getX(), pt.getY());
       
       SetupGnuplotFile((int)threads.get(0).getId(), (int)threads.get(1).getId(), (int)threads.get(2).getId());
       
@@ -54,7 +66,6 @@ public class Main {
 		Runtime.getRuntime().exec("./gnuplot.sh -x");
       } 
       catch (IOException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	  }
    }

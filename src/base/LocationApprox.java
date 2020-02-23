@@ -1,55 +1,118 @@
 package base;
 
-import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 
 public class LocationApprox {
-	Point location;
+	Point2D location;
 	
-   public double TriangleSize(Point a, Point b, Point c) {
-		double l1 = Math.sqrt(Math.pow((a.x-b.x),2) + Math.pow((a.y-b.y),2) );   
-	    double l2 = Math.sqrt(Math.pow((b.x-c.x),2) + Math.pow((b.y-c.y),2) );   
-		double l3 = Math.sqrt(Math.pow((a.x-c.x),2) + Math.pow((a.y-c.y),2) );       
+   public double TriangleSize(Point2D a, Point2D b, Point2D c) {
+		/*
+	   	double l1 = Math.sqrt(Math.pow((a.getX()-b.getX()),2) + Math.pow((a.getY()-b.getY()),2) );   
+	    double l2 = Math.sqrt(Math.pow((b.getX()-c.getX()),2) + Math.pow((b.getY()-c.getY()),2) );   
+		double l3 = Math.sqrt(Math.pow((a.getX()-c.getX()),2) + Math.pow((a.getY()-c.getY()),2) );       
+		*/
+	   double l1 = (a.getX()-b.getX())*(a.getX()-b.getX())+(a.getY()-b.getY())*(a.getY()-b.getY());
+	   double l2 = (b.getX()-c.getX())*(b.getX()-c.getX())+(b.getY()-c.getY())*(b.getY()-c.getY());
+	   double l3 = (a.getX()-c.getX())*(a.getX()-c.getX())+(a.getY()-c.getY())*(a.getY()-c.getY());
+	    
 		return l1+l2+l3;		  
 	}
 
    public void PrintLocationToFile() throws FileNotFoundException{
       PrintWriter t = new PrintWriter("./src/ActualLocation.dat");
 		for(int lon = -180; lon <=180; lon++) {
-			t.println(lon + " " + location.x);
+			t.println(lon + " " + location.getX());
 		}
 		for(int lat = -90; lat <=90; lat++) {
-			t.println(location.y + " " + lat);
+			t.println(location.getY() + " " + lat);
 		}
 		t.close();
    }
 
-   public Point getlocation(){
-      return location;
+   public Point2D getlocation(){
+	      return location;
    }
 	
-	public LocationApprox(ArrayList<Point> a, ArrayList<Point> b, ArrayList<Point> c){
-
-      int smalla, smallb, smallc;
-		smalla = smallb = smallc = 0;
-		double smallarea = 1000000;
-		for(int x = 0; x < a.size(); x++) {
-			for(int y = 0; y < b.size(); y++) {
-				for(int z = 0; z < c.size(); z++) {
-					double area = TriangleSize(a.get(x), b.get(y), c.get(z));
-					if(area < smallarea) {
-						smallarea = area;
-						smalla = x;
-						smallb = y;
-						smallc = z;
-					}
-				}
+	public LocationApprox(ArrayList<Point2D> a, ArrayList<Point2D> b, ArrayList<Point2D> c){
+		
+		ArrayList<Point2D> a1 = new ArrayList<Point2D>();//(ArrayList<Point2D>) a.subList(0,  a.size()/4);
+		ArrayList<Point2D> a2 = new ArrayList<Point2D>();//) a.subList(a.size()/4,  a.size()/2);
+		ArrayList<Point2D> a3 = new ArrayList<Point2D>();//) a.subList(a.size()/2,  3*a.size()/4);
+		ArrayList<Point2D> a4 = new ArrayList<Point2D>();//) a.subList(3*a.size()/4,  a.size()-1);
+		
+		for(int i = 0; i < a.size(); i++) {
+			if(i < a.size()/4) {
+				a1.add(a.get(i));
+			}
+			else if(i < a.size()/2 && i >= a.size()/4) {
+				a2.add(a.get(i));
+			}
+			else if(i < 3*a.size()/4 && i >=  a.size()/2) {
+				a3.add(a.get(i));
+			}
+			else{
+				a4.add(a.get(i));
 			}
 		}
-		int lon = (a.get(smalla).x + b.get(smallb).x + c.get(smallc).x)/3;
-		int lat = (a.get(smalla).y + b.get(smallb).y + c.get(smallc).y)/3;
-	   location = new Point(lat,lon);
+		
+	    ArrayList<Multithread_Location> threads = new ArrayList<Multithread_Location>();
+
+	    threads.add(new Multithread_Location(a1, b, c));
+	    threads.add(new Multithread_Location(a2, b, c));
+	    threads.add(new Multithread_Location(a3, b, c));
+	    threads.add(new Multithread_Location(a4, b, c));
+	    
+	    for (int i = 0; i < 4; i++) {
+	    	threads.get(i).start();
+	    }
+	    System.out.println("Location Threads Running");
+	    int percentage = 0;
+	    while(true) {
+		    int newpercentage = 0;
+	    	for (int i = 0; i < 4; i++) {
+	    		newpercentage += threads.get(i).percent;
+	    	}
+	    	if (percentage/4 < newpercentage/4) {
+	    		percentage = newpercentage;
+    			int percent = percentage/4;
+	    		if(percentage < 40) {
+	    			System.out.print("[  " + percent + "%]\r");
+	    			System.out.flush();
+	    		}
+	    		else if(percentage >=40 && percentage < 400) {
+	    			System.out.print("[ " + percent + "%]\r");
+	    			System.out.flush();
+	    		}
+	    		else{
+	    			System.out.print("[" + percent + "%]\r");
+	    			System.out.flush();
+	    			break;
+	    		}
+	    	}
+	    }
+	    try { 
+	    	for(int i = 0; i < threads.size(); i++) {
+	    		threads.get(i).join();
+	    	}
+	    } 
+	    catch (Exception e) { 
+	    	System.out.println(e); 
+	    } 
+	      
+	    System.out.println("Location Threads Finished");
+	    
+	    double best = 1000000;
+	    int index = 0;
+	    for(int i = 0; i < threads.size(); i++) {
+	    	if(threads.get(i).area < best) {
+	    		best = threads.get(i).area;
+	    		index = i;
+	    	}
+	    }
+		
+	    location = threads.get(index).location;
    }
 }
