@@ -3,12 +3,15 @@ package base;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+
 public class SolarMath {
-	public static double declinationFunc(double date) {
+	static double percent;
+	
+	public double declinationFunc(double date) {
 		return (0.4092797)*Math.cos(((2*Math.PI)*(date+110))/365);
 	}
 	
-	public static double sunelevationFunc(double height, double shadowlength) {
+	public  double sunelevationFunc(double height, double shadowlength) {
 		return Math.atan(height/shadowlength);
 	}
 	
@@ -20,9 +23,11 @@ public class SolarMath {
 		return time-(12/Math.PI)*longitude;
 	}
 	
-	public static ArrayList<Point2D> Trace(double declinationangle, double sunelevation, double time, double date){
+	public ArrayList<Point2D> Trace(double declinationangle, double sunelevation, double time, double date){
 		ArrayList<Point2D> trace = new ArrayList<Point2D>();
 		double lhs = Math.sin(sunelevation);
+		int max = 361*181*20;
+		int iter = 0;
 		for(double lon = -180; lon <= 180; lon+=0.05) {
 			for(double lat = -90; lat <= 90; lat+=0.05) {
 				double rhs = Math.sin(declinationangle)*Math.sin((lat*Math.PI/180))+
@@ -32,6 +37,11 @@ public class SolarMath {
 				if(eq < 0.00005 && eq > -0.00005) {
 					trace.add(new Point2D.Double(lat,lon));
 				}
+				double newpercent = Math.ceil(100*iter/max);
+				if(newpercent > percent) {
+					percent = newpercent;
+				}
+				iter++;
 			}
 		}
 		return trace;

@@ -36,7 +36,7 @@ public class LocationApprox {
 	      return location;
    }
 	
-	public LocationApprox(ArrayList<Point2D> a, ArrayList<Point2D> b, ArrayList<Point2D> c){
+	public LocationApprox(ArrayList<Point2D> a, ArrayList<Point2D> b, ArrayList<Point2D> c, boolean print){
 		
 		ArrayList<Point2D> a1 = new ArrayList<Point2D>();//(ArrayList<Point2D>) a.subList(0,  a.size()/4);
 		ArrayList<Point2D> a2 = new ArrayList<Point2D>();//) a.subList(a.size()/4,  a.size()/2);
@@ -68,27 +68,28 @@ public class LocationApprox {
 	    for (int i = 0; i < 4; i++) {
 	    	threads.get(i).start();
 	    }
+	    
 	    System.out.println("Location Threads Running");
-	    int percentage = 0;
-	    while(true) {
-		    int newpercentage = 0;
-	    	for (int i = 0; i < 4; i++) {
-	    		newpercentage += threads.get(i).percent;
-	    	}
-	    	if (percentage/4 < newpercentage/4) {
-	    		percentage = newpercentage;
+	    if(print){	    
+	    	int percentage = 0;
+	    	while(true) {
+	    		int newpercentage = 0;
+	    		for (int i = 0; i < 4; i++) {
+	    			newpercentage += threads.get(i).percent;
+	    		}
+				percentage = newpercentage;
     			int percent = percentage/4;
 	    		if(percentage < 40) {
-	    			System.out.print("[  " + percent + "%]\r");
-	    			System.out.flush();
+	    			System.out.print(percent + "%\r");
+	    			//System.out.flush();
 	    		}
 	    		else if(percentage >=40 && percentage < 400) {
-	    			System.out.print("[ " + percent + "%]\r");
-	    			System.out.flush();
+	    			System.out.print(percent + "%\r");
+	    			//System.out.flush();
 	    		}
 	    		else{
-	    			System.out.print("[" + percent + "%]\r");
-	    			System.out.flush();
+	    			System.out.print(percent + "%\r");
+	    			//System.out.flush();
 	    			break;
 	    		}
 	    	}
