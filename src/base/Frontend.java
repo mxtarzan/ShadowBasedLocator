@@ -5,7 +5,6 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +12,13 @@ import java.util.ArrayList;
 
 public class Frontend{
 	
-   JFrame frame;
+   JFrame frame;   
+   JLabel picLabel;
+   JPanel pane;
+   GridBagConstraints grid;
+   
+   ArrayList<Point> path = new ArrayList<Point>();
+   private MouseHandler mouseHandler = new MouseHandler();
 	
    public ArrayList<double[]> data = new ArrayList<double[]>();
    
@@ -21,12 +26,6 @@ public class Frontend{
    static String DatesM[];
    static String DatesD[];
 
-   JLabel picLabel;
-
-   GeneralPath path = null;
-   private boolean drawing = false;
-	private MouseHandler mouseHandler = new MouseHandler();
- 
    public boolean isOpen;
 
    public Frontend() throws IOException {
@@ -38,9 +37,8 @@ public class Frontend{
 	  JFrame.setDefaultLookAndFeelDecorated(true); 
       frame.setTitle("Shadow Based Locator");
 	  
-	  GridBagConstraints grid = new GridBagConstraints();
-	  //grid.fill = GridBagConstraints.VERTICAL;
-	  JPanel pane = new JPanel(new GridBagLayout());
+	  grid = new GridBagConstraints();
+	  pane = new JPanel(new GridBagLayout());
 	  
       JLabel spacer = new JLabel(" ");
       grid.gridx = 0;
@@ -100,8 +98,9 @@ public class Frontend{
     		  double[] info = new double[4];
     		  info[0] = datetodouble((String)dm1.getSelectedItem(), (String)dd1.getSelectedItem());
     		  info[1] = timetodouble((String)t1.getSelectedItem());
-    		  info[2] = 1;
-    		  info[3] = 2;
+    		  info[2] = path.get(1).y - path.get(0).y;
+    		  info[3] = path.get(2).x - path.get(1).x;
+    		  path = new ArrayList<Point>();
     		  data.add(info);
     		  pane.remove(picLabel);
     		  pane.updateUI();
@@ -125,7 +124,7 @@ public class Frontend{
     		   }
     		   picLabel = new JLabel(new ImageIcon(myPicture));
      		   grid.gridx = 0;
-    		   grid.gridy = 5;
+    		   grid.gridy = 7;
      	       grid.gridwidth = 4;
     		   pane.add(picLabel, grid);
      		   pane.updateUI();
@@ -139,24 +138,26 @@ public class Frontend{
       JButton exitB = new JButton("Done");
       exitB.addActionListener(new ActionListener() {	
     	  public void actionPerformed(ActionEvent e){ 
-    		  double[] info = new double[4];
-    		  info[0] = 38;
-    		  info[1] = 19.17;
-    		  info[2] = 3;
-    		  info[3] = 6;
-    		  data.add(info);
-    		  info = new double[4];
-    		  info[0] = 45;
-    		  info[1] = 19.75;
-    		  info[2] = 6;
-    		  info[3] = 13;
-    		  data.add(info);
-    		  info = new double[4];
-    		  info[0] = 38;
-    		  info[1] = 21.5;
-    		  info[2] = 2.2;
-    		  info[3] = 8.65;
-    		  data.add(info);
+    		  if(data.size() < 3) {
+    			  double[] info = new double[4];
+    			  info[0] = 38;
+    			  info[1] = 19.17;
+    			  info[2] = 3;
+    			  info[3] = 6;
+    			  data.add(info);
+    			  info = new double[4];
+    			  info[0] = 45;
+    			  info[1] = 19.75;
+    			  info[2] = 6;
+    			  info[3] = 13;
+    			  data.add(info);
+    			  info = new double[4];
+    			  info[0] = 38;
+    			  info[1] = 21.5;
+    			  info[2] = 2.2;
+    			  info[3] = 8.65;
+    			  data.add(info);
+    		  }
     		  isOpen = false;
     		  frame.setVisible(false);
       	  }
@@ -166,6 +167,20 @@ public class Frontend{
       grid.gridwidth = 2;
       pane.add(exitB, grid);
 
+	  JLabel Instr1 = new JLabel("Click top then bottem of the object then the edge of shadow");
+      grid.gridx = 0;
+      grid.gridy = 5;
+      grid.gridwidth = 4;
+      pane.add(Instr1, grid);
+      grid.gridwidth = 1;
+      
+	  JLabel Instr2 = new JLabel("Right click to reset lines");
+      grid.gridx = 0;
+      grid.gridy = 6;
+      grid.gridwidth = 4;
+      pane.add(Instr2, grid);
+      grid.gridwidth = 1;
+      
       frame.add(pane);
 
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -178,6 +193,35 @@ public class Frontend{
       frame.addMouseListener(mouseHandler);
       frame.addMouseMotionListener(mouseHandler);
    } 
+   
+   private class MouseHandler extends MouseAdapter {
+
+       @Override
+       public void mousePressed(MouseEvent e) {
+    	   	if(SwingUtilities.isLeftMouseButton(e)){
+    	   		Point p = e.getPoint();
+    	   		System.out.println("mouse left clicked " + p.x + " " + p.y);
+    	   		path.add(p);
+    	   		Graphics2D g = (Graphics2D) frame.getGraphics();
+    	   	    g.setStroke(new BasicStroke(3));
+     	   		g.setColor(Color.white);
+	   			g.drawOval(p.x-3, p.y-3, 6, 6);
+    	   		if(path.size() >= 2) {
+    	   			Point start = path.get(path.size()-2);
+    	   			Point end = path.get(path.size()-1);
+    	   			g.setColor(Color.green);
+    	   			g.drawLine(start.x, start.y, end.x, end.y);
+    	   		}
+            }
+    	   	if (SwingUtilities.isRightMouseButton(e)){
+    	   		System.out.println("mouse right clicked");
+    	   		if(path.size()!=0) {
+    	   			path = new ArrayList<Point>();
+    	   			frame.pack();
+    	   		}
+    	   	}
+        }
+   }
    
    void SetupFrame() {
 	   Times = new String[24*12];
@@ -241,37 +285,5 @@ public class Frontend{
 		double date = Double.parseDouble(d) + totalmonthdays;
 		return date;
    }
-   
-   private class MouseHandler extends MouseAdapter {
-
-       @Override
-       public void mousePressed(MouseEvent e) {
-           Point p = e.getPoint(); 
-           if (!drawing) {
-               path = new GeneralPath();
-               path.moveTo(p.x, p.y);
-               drawing = true;
-           } else {
-               path.lineTo(p.x, p.y);
-           }
-
-           frame.repaint();
-       }
-   }
-   
-   protected void paintComponent(Graphics g) {
-       //super.paintComponent(g);
-       Graphics2D g2d = (Graphics2D) g;
-       g2d.setColor(Color.blue);
-       g2d.setRenderingHint(
-               RenderingHints.KEY_ANTIALIASING,
-               RenderingHints.VALUE_ANTIALIAS_ON);
-       g2d.setStroke(new BasicStroke(8,
-               BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-       if (path!=null) {
-           g2d.draw(path);
-       }
-   }
-   
 }
 
