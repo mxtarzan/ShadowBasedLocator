@@ -71,26 +71,30 @@ public class LocationApprox {
 	    
 	    System.out.println("Location Threads Running");
 	    if(print){	    
-	    	int percentage = 0;
+	    	int oldpercent = 0;
 	    	while(true) {
-	    		int newpercentage = 0;
+	    		int newpercent = 0;
 	    		for (int i = 0; i < 4; i++) {
-	    			newpercentage += threads.get(i).percent;
+	    			newpercent += threads.get(i).percent;
 	    		}
-				percentage = newpercentage;
-    			int percent = percentage/4;
-	    		if(percentage < 40) {
-	    			System.out.print(percent + "%\r");
-	    			//System.out.flush();
-	    		}
-	    		else if(percentage >=40 && percentage < 400) {
-	    			System.out.print(percent + "%\r");
-	    			//System.out.flush();
-	    		}
-	    		else{
-	    			System.out.print(percent + "%\r");
-	    			//System.out.flush();
-	    			break;
+	    		Thread.yield();
+	    		//System.out.flush();
+	    		if((int)newpercent/4 > (int)oldpercent/4) {
+	    			oldpercent = newpercent;
+	    			int percent = (int)Math.ceil(newpercent/4);
+	    			if(percent < 10) {
+	    				System.out.print(percent + "%\r");
+	    				//System.out.flush();
+	    			}
+	    			else if(percent >=10 && percent < 100) {
+	    				System.out.print(percent + "%\r");
+	    				//System.out.flush();
+	    			}
+	    			else{
+	    				System.out.print(percent + "%\r");
+	    				//System.out.flush();
+	    				break;
+	    			}
 	    		}
 	    	}
 	    }

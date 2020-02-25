@@ -6,5 +6,3 @@ case $1 in
       exec gnuplot --persist ./src/gnuscript
       shift;;
 esac
-
-

@@ -45,10 +45,10 @@ public class Multithread_Trace extends Thread{
 				if(eq < 0.00005&& eq > -0.00005) {
 					trace.add(new Point2D.Double(lat,lon));
 				}
-				double newpercent = Math.ceil(100*iter/max);
-				if(newpercent > percent) {
-					percent = newpercent;
-				}
+				percent = Math.ceil(100*iter/max);
+				//if(newpercent > percent) {
+					//percent = newpercent;
+				//}
 			}
 		}
 		return trace;

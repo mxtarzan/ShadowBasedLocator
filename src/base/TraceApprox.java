@@ -30,26 +30,30 @@ public class TraceApprox {
 	    System.out.println("Trace Threads Running");
 	    
 	    if(print) {
-	    double percentage = 0;
-	    while(true) {
-		    	double newpercentage = 0;
+	    	double oldpercent = 0;
+	    	while(true) {
+	    		double newpercent = 0;
 	    		for (int i = 0; i < 3; i++) {
-	    			newpercentage += threads.get(i).percent;
+	    			newpercent += threads.get(i).percent;
 	    		}
-	    		percentage = newpercentage;
-    			int percent = (int)Math.ceil(percentage/3);
-	    		if(percent < 10) {
-	    			System.out.print(percent + "%\r");
-	    			//System.out.flush();
-	    		}
-	    		else if(percent >=10 && percent < 100) {
-	    			System.out.print(percent + "%\r");
-	    			//System.out.flush();
-	    		}
-	    		else{
-	    			System.out.print(percent + "%\r");
-	    			//System.out.flush();
-	    			break;
+	    		Thread.yield();
+	    		//System.out.flush();
+	    		if((int)newpercent/3 > (int)oldpercent/3) {
+	    			oldpercent = newpercent;
+	    			int percent = (int)Math.ceil(newpercent/3);
+	    			if(percent < 10) {
+	    				System.out.print(percent + "%\r");
+	    				//System.out.flush();
+	    			}
+	    			else if(percent >=10 && percent < 100) {
+	    				System.out.print(percent + "%\r");
+	    				//System.out.flush();
+	    			}
+	    			else{
+	    				System.out.print(percent + "%\r");
+	    				//System.out.flush();
+	    				break;
+	    			}
 	    		}
 	    	}
 	    }
