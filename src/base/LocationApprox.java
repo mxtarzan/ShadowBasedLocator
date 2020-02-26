@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 
 public class LocationApprox {
 	Point2D location;
+	int cores = Runtime.getRuntime().availableProcessors();
 	
    public double TriangleSize(Point2D a, Point2D b, Point2D c) {
 		/*
@@ -38,11 +39,23 @@ public class LocationApprox {
 	
 	public LocationApprox(ArrayList<Point2D> a, ArrayList<Point2D> b, ArrayList<Point2D> c, boolean print){
 		
+		ArrayList<ArrayList<Point2D>> asplit = new ArrayList<ArrayList<Point2D>>();
+		/*
 		ArrayList<Point2D> a1 = new ArrayList<Point2D>();//(ArrayList<Point2D>) a.subList(0,  a.size()/4);
 		ArrayList<Point2D> a2 = new ArrayList<Point2D>();//) a.subList(a.size()/4,  a.size()/2);
 		ArrayList<Point2D> a3 = new ArrayList<Point2D>();//) a.subList(a.size()/2,  3*a.size()/4);
 		ArrayList<Point2D> a4 = new ArrayList<Point2D>();//) a.subList(3*a.size()/4,  a.size()-1);
-		
+		*/
+		int inc = a.size()/cores;
+		ArrayList<Point2D> temp = new ArrayList<Point2D>();
+		for(int i = 0; i < a.size(); i++) {
+			temp.add(a.get(i));
+			if(i != 0 && i%inc == 0) {
+				asplit.add(temp);
+				temp = new ArrayList<Point2D>();
+			}
+		}		
+		/*
 		for(int i = 0; i < a.size(); i++) {
 			if(i < a.size()/4) {
 				a1.add(a.get(i));
@@ -57,15 +70,19 @@ public class LocationApprox {
 				a4.add(a.get(i));
 			}
 		}
-		
+		*/
 	    ArrayList<Multithread_Location> threads = new ArrayList<Multithread_Location>();
 
+	    for(int i = 0; i < cores; i++) {
+	    	threads.add(new Multithread_Location(asplit.get(i), b, c));
+	    }
+	    /*
 	    threads.add(new Multithread_Location(a1, b, c));
 	    threads.add(new Multithread_Location(a2, b, c));
 	    threads.add(new Multithread_Location(a3, b, c));
 	    threads.add(new Multithread_Location(a4, b, c));
-	    
-	    for (int i = 0; i < 4; i++) {
+	    */
+	    for (int i = 0; i < cores; i++) {
 	    	threads.get(i).start();
 	    }
 	    
@@ -74,14 +91,14 @@ public class LocationApprox {
 	    	int oldpercent = 0;
 	    	while(true) {
 	    		int newpercent = 0;
-	    		for (int i = 0; i < 4; i++) {
+	    		for (int i = 0; i < cores; i++) {
 	    			newpercent += threads.get(i).percent;
 	    		}
 	    		Thread.yield();
 	    		//System.out.flush();
-	    		if((int)newpercent/4 > (int)oldpercent/4) {
+	    		if((int)newpercent/cores > (int)oldpercent/cores) {
 	    			oldpercent = newpercent;
-	    			int percent = (int)Math.ceil(newpercent/4);
+	    			int percent = (int)Math.ceil(newpercent/cores);
 	    			if(percent < 10) {
 	    				System.out.print(percent + "%\r");
 	    				//System.out.flush();
