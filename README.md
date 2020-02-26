@@ -12,6 +12,8 @@ accurate location.
 How to Use:
 Install: Java, GNUPlot, maybe Eclipse(or just use the jar file)
 Run:
-``` cd Path/To/ShadowBasedLocator ```
-``` java -jar run.jar ```
+```
+cd Path/To/ShadowBasedLocator
+java -jar run.jar
+```
 
