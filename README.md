@@ -10,7 +10,9 @@ be used to pinpoint the location. Three images will be needed to generate a
 accurate location. 
 
 How to Use:
+
 Install: Java, GNUPlot, maybe Eclipse(or just use the jar file)
+
 Run:
 ```
 cd Path/To/ShadowBasedLocator
