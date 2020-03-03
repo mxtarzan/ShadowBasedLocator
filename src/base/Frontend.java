@@ -204,14 +204,19 @@ public class Frontend{
     	   		path.add(p);
     	   		Graphics2D g = (Graphics2D) frame.getGraphics();
     	   	    g.setStroke(new BasicStroke(3));
-     	   		g.setColor(Color.white);
+     	   		g.setColor(Color.gray);
 	   			g.drawOval(p.x-3, p.y-3, 6, 6);
     	   		if(path.size() >= 2) {
     	   			Point start = path.get(path.size()-2);
     	   			Point end = path.get(path.size()-1);
-    	   			g.setColor(Color.green);
+    	   			if(path.size() < 3) {
+    	   				g.setColor(Color.red);
+    	   			}
+    	   			else {
+    	   				g.setColor(Color.green);
+    	   			}
     	   			g.drawLine(start.x, start.y, end.x, end.y);
-    	   		}
+    	   			}
             }
     	   	if (SwingUtilities.isRightMouseButton(e)){
     	   		System.out.println("mouse right clicked");
