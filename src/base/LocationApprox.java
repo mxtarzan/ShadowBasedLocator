@@ -46,7 +46,6 @@ public class LocationApprox {
 		ArrayList<Point2D> a3 = new ArrayList<Point2D>();//) a.subList(a.size()/2,  3*a.size()/4);
 		ArrayList<Point2D> a4 = new ArrayList<Point2D>();//) a.subList(3*a.size()/4,  a.size()-1);
 		*/
-		System.out.println(a.size() + " " + cores);
 		int inc = a.size()/cores;
 		
 		ArrayList<Point2D> temp = new ArrayList<Point2D>();
@@ -57,8 +56,7 @@ public class LocationApprox {
 				temp = new ArrayList<Point2D>();
 			}
 			if(i == a.size()-1 && asplit.size() < cores)asplit.add(temp);
-		}	
-		System.out.println(asplit.size());
+		}
 		/*
 		for(int i = 0; i < a.size(); i++) {
 			if(i < a.size()/4) {
@@ -132,7 +130,7 @@ public class LocationApprox {
 	    
 	    double best = 1000000;
 	    int index = 0;
-	    for(int i = 0; i < threads.size(); i++) {
+	    for(int i = 0; i < cores; i++) {
 	    	if(threads.get(i).area < best) {
 	    		best = threads.get(i).area;
 	    		index = i;

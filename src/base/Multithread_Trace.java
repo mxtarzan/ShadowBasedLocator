@@ -27,10 +27,9 @@ public class Multithread_Trace extends Thread{
 	}
 	
 	public double tsunFunc(double time, double longitude, double lon) {
-		lon = -71;
+		
 		double L4 = lon *4;
 		time = time - (L4/60);
-		//System.out.println(L4/60);
 		return time-(12/Math.PI)*longitude;
 	}
 	
@@ -39,7 +38,6 @@ public class Multithread_Trace extends Thread{
 		double lhs = Math.sin(sunelevation);
 		double max = 25927200;
 		double iter = 0;
-		System.out.println(time);
 		for(double lon = -180; lon <= 180; lon+=0.05) {
 			for(double lat = -90; lat <= 90; lat+=0.05) {
 				iter++;
