@@ -27,9 +27,9 @@ public class Multithread_Trace extends Thread{
 	}
 	
 	public double tsunFunc(double time, double longitude, double lon) {
-		//lon = -71;
-		//double L4 = lon *4;
-		//time = time - (L4/60);
+		lon = -71;
+		double L4 = lon *4;
+		time = time - (L4/60);
 		//System.out.println(L4/60);
 		return time-(12/Math.PI)*longitude;
 	}

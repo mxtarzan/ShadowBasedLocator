@@ -165,19 +165,19 @@ public class Frontend{
     		  if(data.size() < 3) {
     			  double[] info = new double[4];
     			  info[0] = 38;
-    			  info[1] = 19.17;
+    			  info[1] = 19.17-5;
     			  info[2] = 3;
     			  info[3] = 6;
     			  data.add(info);
     			  info = new double[4];
     			  info[0] = 45;
-    			  info[1] = 19.75;
+    			  info[1] = 19.75-5;
     			  info[2] = 6;
     			  info[3] = 13;
     			  data.add(info);
     			  info = new double[4];
     			  info[0] = 38;
-    			  info[1] = 21.5;
+    			  info[1] = 21.5-5;
     			  info[2] = 2.2;
     			  info[3] = 8.65;
     			  data.add(info);
