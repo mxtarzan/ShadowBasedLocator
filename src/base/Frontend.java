@@ -6,8 +6,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class Frontend{
@@ -95,6 +97,11 @@ public class Frontend{
       JButton storeB = new JButton("Store Data");
       storeB.addActionListener(new ActionListener() {	
     	  public void actionPerformed(ActionEvent e){  
+    		  if(path.size() != 3) {
+    			  path.clear();
+    			  frame.pack();
+    			  return;
+    		  }
     		  double[] info = new double[4];
     		  info[0] = datetodouble((String)dm1.getSelectedItem(), (String)dd1.getSelectedItem());
     		  info[1] = timetodouble((String)t1.getSelectedItem());
@@ -118,14 +125,31 @@ public class Frontend{
     		   j.showSaveDialog(null);
     		   BufferedImage myPicture = null;
     		   try {
-				myPicture = ImageIO.read(new File(j.getSelectedFile().toString()));
+    			   myPicture = ImageIO.read(new File(j.getSelectedFile().toString()));
     		   } catch (IOException e1) {
-				e1.printStackTrace();
+    			   e1.printStackTrace();
     		   }
+			   String s = "";
+			   try {
+    				Process p = Runtime.getRuntime().exec("identify -verbose " + j.getSelectedFile().toString());
+    				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    				String temp;
+    				while ((temp = br.readLine()) != null) {
+    		        	s += temp; 
+    		        }
+    		        p.waitFor();
+    		        p.destroy();
+    		   } 
+    		   catch (IOException | InterruptedException e1) {
+    			   e1.printStackTrace();
+    		   }
+			   
+			   parseimagedata(t1,dm1,dd1,s);
+			   myPicture = resizeImage(myPicture);
     		   picLabel = new JLabel(new ImageIcon(myPicture));
      		   grid.gridx = 0;
     		   grid.gridy = 7;
-     	       grid.gridwidth = 4;
+     	       grid.gridwidth = 5;
     		   pane.add(picLabel, grid);
      		   pane.updateUI();
      		   frame.pack();
@@ -199,24 +223,26 @@ public class Frontend{
        @Override
        public void mousePressed(MouseEvent e) {
     	   	if(SwingUtilities.isLeftMouseButton(e)){
-    	   		Point p = e.getPoint();
-    	   		System.out.println("mouse left clicked " + p.x + " " + p.y);
-    	   		path.add(p);
-    	   		Graphics2D g = (Graphics2D) frame.getGraphics();
-    	   	    g.setStroke(new BasicStroke(3));
-     	   		g.setColor(Color.gray);
-	   			g.drawOval(p.x-3, p.y-3, 6, 6);
-    	   		if(path.size() >= 2) {
-    	   			Point start = path.get(path.size()-2);
-    	   			Point end = path.get(path.size()-1);
-    	   			if(path.size() < 3) {
-    	   				g.setColor(Color.red);
-    	   			}
-    	   			else {
-    	   				g.setColor(Color.green);
-    	   			}
+    	   		if(path.size() < 3) {
+    	   			Point p = e.getPoint();
+    	   			System.out.println("mouse left clicked " + p.x + " " + p.y);
+    	   			path.add(p);
+    	   			Graphics2D g = (Graphics2D) frame.getGraphics();
+    	   			g.setStroke(new BasicStroke(3));
+    	   			g.setColor(Color.gray);
+    	   			g.drawOval(p.x-3, p.y-3, 6, 6);
+    	   			if(path.size() >= 2 && path.size() < 4) {
+    	   				Point start = path.get(path.size()-2);
+    	   				Point end = path.get(path.size()-1);
+    	   				if(path.size() < 3) {
+    	   					g.setColor(Color.red);
+    	   				}
+    	   				else if(path.size() == 3) {
+    	   					g.setColor(Color.green);
+    	   				}
     	   			g.drawLine(start.x, start.y, end.x, end.y);
     	   			}
+    	   		}
             }
     	   	if (SwingUtilities.isRightMouseButton(e)){
     	   		System.out.println("mouse right clicked");
@@ -289,6 +315,52 @@ public class Frontend{
 		}
 		double date = Double.parseDouble(d) + totalmonthdays;
 		return date;
+   }
+   void parseimagedata(JComboBox<String> t1, JComboBox<String> dm1, JComboBox<String> dd1,  String s) {
+	   String info;
+	   String[] first = s.split("DateTimeDigitized: ");
+	   if(first.length == 1) return;
+	   String[] second = first[1].split("exif:DateTimeOriginal:"); 
+	   info = second[0];
+
+	   System.out.println(info);
+
+	   String[] init = info.split(" ");
+	   String[] date = init[0].split(":");
+	   
+	   dm1.addItem(date[1]);
+	   dm1.setSelectedItem(date[1]);
+	   dd1.addItem(date[2]);
+	   dd1.setSelectedItem(date[2]);
+
+	   String[] time = init[1].split(":");
+	   String hour = time[0];
+	   String min = time[1];
+	   if(Integer.parseInt(hour) > 12) {
+		   hour = Integer.toString(Integer.parseInt(hour)-12);
+		   min += "pm";
+	   }
+	   else {
+		   min += "am";
+	   }
+	   String t = hour+":"+min;
+	   t1.addItem(t);
+	   t1.setSelectedItem(t);
+   }
+   BufferedImage resizeImage(BufferedImage img) {
+	   int w = img.getWidth();
+	   int h = img.getHeight();
+	   if(w <= 500)return img;
+	   int scale = w/500;
+	   return resize(img, w/scale, h/scale);
+   }
+   private static BufferedImage resize(BufferedImage img, int height, int width) {
+       Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+       BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+       Graphics2D g2d = resized.createGraphics();
+       g2d.drawImage(tmp, 0, 0, null);
+       g2d.dispose();
+       return resized;
    }
 }
 

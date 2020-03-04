@@ -20,6 +20,8 @@ public class SolarMath {
 	}
 	
 	public static double tsunFunc(double time, double longitude) {
+		double L4 = -71 *4;
+		time = time - (L4/24) - L4%24/60;
 		return time-(12/Math.PI)*longitude;
 	}
 	
@@ -28,6 +30,7 @@ public class SolarMath {
 		double lhs = Math.sin(sunelevation);
 		int max = 361*181*20;
 		int iter = 0;
+		System.out.println("here");
 		for(double lon = -180; lon <= 180; lon+=0.05) {
 			for(double lat = -90; lat <= 90; lat+=0.05) {
 				double rhs = Math.sin(declinationangle)*Math.sin((lat*Math.PI/180))+
