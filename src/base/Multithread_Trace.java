@@ -22,14 +22,11 @@ public class Multithread_Trace extends Thread{
 		return Math.atan(height/shadowlength);
 	}
 	
-	public double wFunc(double time, double longitude, double lon) {
-		return (Math.PI/12)*(tsunFunc(time, longitude, lon)-12);
+	public double wFunc(double time, double longitude) {
+		return (Math.PI/12)*(tsunFunc(time, longitude)-12);
 	}
 	
-	public double tsunFunc(double time, double longitude, double lon) {
-		
-		double L4 = lon *4;
-		time = time - (L4/60);
+	public double tsunFunc(double time, double longitude) {
 		return time-(12/Math.PI)*longitude;
 	}
 	
@@ -43,7 +40,7 @@ public class Multithread_Trace extends Thread{
 				iter++;
 				double rhs = Math.sin(declinationangle)*Math.sin((lat*Math.PI/180))+
 						     Math.cos(declinationangle)*Math.cos((lat*Math.PI/180))*
-							 Math.cos(wFunc(time, lon*Math.PI/180, lon));
+							 Math.cos(wFunc(time, lon*Math.PI/180));
 				double eq = lhs-rhs;
 				if(eq < 0.00005&& eq > -0.00005) {
 					trace.add(new Point2D.Double(lat,lon));

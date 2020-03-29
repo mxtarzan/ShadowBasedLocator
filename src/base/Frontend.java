@@ -105,8 +105,8 @@ public class Frontend{
     		  double[] info = new double[4];
     		  info[0] = datetodouble((String)dm1.getSelectedItem(), (String)dd1.getSelectedItem());
     		  info[1] = timetodouble((String)t1.getSelectedItem());
-    		  info[2] = path.get(1).y - path.get(0).y;
-    		  info[3] = path.get(2).x - path.get(1).x;
+    		  info[2] = Math.abs(path.get(1).y - path.get(0).y);
+    		  info[3] = Math.abs(path.get(2).x - path.get(1).x);
     		  path = new ArrayList<Point>();
     		  data.add(info);
     		  pane.remove(picLabel);
@@ -162,22 +162,44 @@ public class Frontend{
       JButton exitB = new JButton("Done");
       exitB.addActionListener(new ActionListener() {	
     	  public void actionPerformed(ActionEvent e){ 
-    		  if(data.size() < 3) {
+    		  if(data.size() == 0) {
     			  double[] info = new double[4];
     			  info[0] = 38;
-    			  info[1] = 19.17-5;
+    			  info[1] = 19.17;
     			  info[2] = 3;
     			  info[3] = 6;
     			  data.add(info);
     			  info = new double[4];
     			  info[0] = 45;
-    			  info[1] = 19.75-5;
+    			  info[1] = 19.75;
     			  info[2] = 6;
     			  info[3] = 13;
     			  data.add(info);
     			  info = new double[4];
     			  info[0] = 38;
-    			  info[1] = 21.5-5;
+    			  info[1] = 21.5;
+    			  info[2] = 2.2;
+    			  info[3] = 8.65;
+    			  data.add(info);
+    		  }
+    		  if(data.size() == 1) {
+    			  double[] info = new double[4];
+    			  info[0] = 45;
+    			  info[1] = 19.75;
+    			  info[2] = 6;
+    			  info[3] = 13;
+    			  data.add(info);
+    			  info = new double[4];
+    			  info[0] = 38;
+    			  info[1] = 21.5;
+    			  info[2] = 2.2;
+    			  info[3] = 8.65;
+    			  data.add(info);
+    		  }
+    		  if(data.size() == 2) {
+    			  double[] info = new double[4];
+    			  info[0] = 38;
+    			  info[1] = 21.5;
     			  info[2] = 2.2;
     			  info[3] = 8.65;
     			  data.add(info);
@@ -302,10 +324,18 @@ public class Frontend{
    }
    
    double timetodouble(String time) {
+	    char tm = time.charAt(time.length()-2);
 		time = time.substring(0, time.length()-2);
 	    String[] result = time.split(":");
-	    double newtime = Double.parseDouble(result[0]) + Double.parseDouble(result[1])/60;
-	    return newtime;
+	    double newtime;
+	    if(tm == 'a') {
+	    	newtime = Double.parseDouble(result[0]) + Double.parseDouble(result[1])/60;
+	    }
+	    else {
+	    	newtime = Double.parseDouble(result[0])+12 + Double.parseDouble(result[1])/60;
+	 	   
+	    }
+	    	return newtime;
    }
    double datetodouble(String m, String d) {
 	   int months[]= {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -319,48 +349,99 @@ public class Frontend{
    void parseimagedata(JComboBox<String> t1, JComboBox<String> dm1, JComboBox<String> dd1,  String s) {
 	   String info;
 	   String[] first = s.split("DateTimeDigitized: ");
-	   if(first.length == 1) return;
+	   if(first.length == 1) {
+		   System.out.println("Unable to get time and date from image");
+		   return;
+	   }
 	   String[] second = first[1].split("exif:DateTimeOriginal:"); 
 	   info = second[0];
 
-	   System.out.println(info);
-
 	   String[] init = info.split(" ");
 	   String[] date = init[0].split(":");
-	   
-	   dm1.addItem(date[1]);
-	   dm1.setSelectedItem(date[1]);
-	   dd1.addItem(date[2]);
-	   dd1.setSelectedItem(date[2]);
-
 	   String[] time = init[1].split(":");
-	   String hour = time[0];
-	   String min = time[1];
-	   if(Integer.parseInt(hour) > 12) {
-		   hour = Integer.toString(Integer.parseInt(hour)-12);
-		   min += "pm";
+	   int dm = Integer.parseInt(date[1]);
+	   int dd = Integer.parseInt(date[2]);
+	   int h = Integer.parseInt(time[0]);
+	   int m = Integer.parseInt(time[1]);
+	   String[] third = second[1].split("exif:GPSLongitude: ");
+	   if(third.length == 1) {
+		    System.out.println("Unable to adjest time for timezone");
 	   }
 	   else {
-		   min += "am";
+	   		String[] forth = third[1].split("exif:GPSLongitudeRef: ");
+	   		String longitude = forth[0];
+	   		String[] firth = forth[1].split("exif:GPSTimeStamp: ");
+	   		String dir = firth[0].strip();
+	   		String[] sixth = longitude.split("/1, ");
+	   		int deltalon = Integer.parseInt(sixth[0])*4;
+	   		int deltahour = deltalon/60;
+	   		int deltamin = deltalon%60;
+	   		if(dir.equals("W")) {
+		   		m = m + deltamin;
+		   		if(m >=60) {
+			   		h+=1;
+			   		m = m % 60;
+		   		}
+		   		h = h + deltahour;
+		   		if(h >= 24) {
+			   		dd += 1;
+			   		h = 12;
+			   		if(dd > 31) {
+				   		dd = 1;
+				   		dm += 1;
+				   		if(dm > 12) dm = 0;
+			   		}
+		   		}
+	   		}
+	   		else if(dir.equals("E")){
+		   		m = m - deltamin;
+		   		if(m < 0) {
+			   		h -= 1;
+			   		m = m % 60;
+		   		}
+		   		h = h - deltahour;
+		   		if(h < 0) {
+		   			h = 0;
+			   		dd -= 1;
+			   		if(dd < 0) {
+				   		dd = 31;
+				   		dm -= 1;
+				   		if(dm == 0) dm = 12;
+			   		}
+		   		}
+	   		}
+	   }
+	   String hour;
+	   String min;
+	   if(h > 12) {
+		   hour = Integer.toString(h-12);
+		   min = Integer.toString(m)+"pm";
+	   }
+	   else {
+		   hour = Integer.toString(h);
+		   min = Integer.toString(m)+"am";
 	   }
 	   String t = hour+":"+min;
 	   t1.addItem(t);
 	   t1.setSelectedItem(t);
+	   dm1.addItem(Integer.toString(dm));
+	   dm1.setSelectedItem(Integer.toString(dm));
+	   dd1.addItem(Integer.toString(dd));
+	   dd1.setSelectedItem(Integer.toString(dd));
    }
    BufferedImage resizeImage(BufferedImage img) {
-	   int w = img.getWidth();
-	   int h = img.getHeight();
-	   if(w <= 500)return img;
-	   int scale = w/500;
-	   return resize(img, w/scale, h/scale);
+	   if(img.getWidth() <= 500)return img;
+	   BufferedImage resized = resize(img);
+	   return resized;
    }
-   private static BufferedImage resize(BufferedImage img, int height, int width) {
-       Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-       BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-       Graphics2D g2d = resized.createGraphics();
-       g2d.drawImage(tmp, 0, 0, null);
-       g2d.dispose();
-       return resized;
+   private static BufferedImage resize(BufferedImage img) {
+	   int IMG_WIDTH = img.getWidth()/(img.getWidth()/500);
+	   int IMG_HEIGHT = img.getHeight()/(img.getWidth()/500);
+	   BufferedImage resizedImage = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, img.getType());
+	   Graphics2D g = resizedImage.createGraphics();
+	   g.drawImage(img, 0, 0, IMG_WIDTH, IMG_HEIGHT, null);
+	   g.dispose();	
+       return resizedImage;
    }
 }
 
