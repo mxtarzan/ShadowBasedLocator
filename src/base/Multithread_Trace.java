@@ -43,12 +43,9 @@ public class Multithread_Trace extends Thread{
 							 Math.cos(wFunc(time, lon*Math.PI/180));
 				double eq = lhs-rhs;
 				if(eq < 0.00005&& eq > -0.00005) {
-					trace.add(new Point2D.Double(lat,lon));
+					trace.add(new Point2D.Double(lat,-1*lon));
 				}
 				percent = Math.ceil(100*iter/max);
-				//if(newpercent > percent) {
-					//percent = newpercent;
-				//}
 			}
 		}
 		return trace;
@@ -61,7 +58,7 @@ public class Multithread_Trace extends Thread{
 			ArrayList<Point2D> t = Trace(decangle, sunelevation, img.time, img.date);
 			PrintWriter t1 = new PrintWriter("./src/Data"+Thread.currentThread().getId()+".dat");
 			for(int i = 0; i < t.size(); i++) {
-				t1.println((t.get(i).getX()) + " " + (t.get(i).getY()));
+				t1.println((t.get(i).getY()) + " " + (t.get(i).getX()));
 			}
 			t1.close();
 			this.trace = t;

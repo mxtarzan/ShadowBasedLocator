@@ -8,19 +8,7 @@ import java.io.FileNotFoundException;
 public class LocationApprox {
 	Point2D location;
 	int cores = Runtime.getRuntime().availableProcessors();
-	
-   public double TriangleSize(Point2D a, Point2D b, Point2D c) {
-		/*
-	   	double l1 = Math.sqrt(Math.pow((a.getX()-b.getX()),2) + Math.pow((a.getY()-b.getY()),2) );   
-	    double l2 = Math.sqrt(Math.pow((b.getX()-c.getX()),2) + Math.pow((b.getY()-c.getY()),2) );   
-		double l3 = Math.sqrt(Math.pow((a.getX()-c.getX()),2) + Math.pow((a.getY()-c.getY()),2) );       
-		*/
-	   double l1 = (a.getX()-b.getX())*(a.getX()-b.getX())+(a.getY()-b.getY())*(a.getY()-b.getY());
-	   double l2 = (b.getX()-c.getX())*(b.getX()-c.getX())+(b.getY()-c.getY())*(b.getY()-c.getY());
-	   double l3 = (a.getX()-c.getX())*(a.getX()-c.getX())+(a.getY()-c.getY())*(a.getY()-c.getY());
-	    
-		return l1+l2+l3;		  
-	}
+	boolean failed = false;
 
    public void PrintLocationToFile() throws FileNotFoundException{
       PrintWriter t = new PrintWriter("./src/ActualLocation.dat");
@@ -57,33 +45,12 @@ public class LocationApprox {
 			}
 			if(i == a.size()-1 && asplit.size() < cores)asplit.add(temp);
 		}
-		/*
-		for(int i = 0; i < a.size(); i++) {
-			if(i < a.size()/4) {
-				a1.add(a.get(i));
-			}
-			else if(i < a.size()/2 && i >= a.size()/4) {
-				a2.add(a.get(i));
-			}
-			else if(i < 3*a.size()/4 && i >=  a.size()/2) {
-				a3.add(a.get(i));
-			}
-			else{
-				a4.add(a.get(i));
-			}
-		}
-		*/
+		
 	    ArrayList<Multithread_Location> threads = new ArrayList<Multithread_Location>();
 
 	    for(int i = 0; i < cores; i++) {
 	    	threads.add(new Multithread_Location(asplit.get(i), b, c));
 	    }
-	    /*
-	    threads.add(new Multithread_Location(a1, b, c));
-	    threads.add(new Multithread_Location(a2, b, c));
-	    threads.add(new Multithread_Location(a3, b, c));
-	    threads.add(new Multithread_Location(a4, b, c));
-	    */
 	    for (int i = 0; i < cores; i++) {
 	    	threads.get(i).start();
 	    }
@@ -95,6 +62,8 @@ public class LocationApprox {
 	    		int newpercent = 0;
 	    		for (int i = 0; i < cores; i++) {
 	    			newpercent += threads.get(i).percent;
+	    			failed = threads.get(i).failed;
+	    			if(failed) return;
 	    		}
 	    		Thread.yield();
 	    		//System.out.flush();

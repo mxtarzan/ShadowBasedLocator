@@ -20,11 +20,17 @@ public class Main {
       
       LocationApprox location = new LocationApprox(traces.a, traces.b, traces.c, show_status);
       
+      if(location.failed) {
+    	  System.out.println("Unable to calculate location");
+    	  System.exit(1);
+      }
+      
       location.PrintLocationToFile();
       
       Point2D pt = location.getlocation();
-      
-      System.out.printf("[%.3f, %.3f]", pt.getX(), pt.getY());
+
+      System.out.printf("https://www.google.com/maps/place/%.5f, %.5f\n", pt.getX(), pt.getY());
+      System.out.printf("[%.5f, %.5f]", pt.getX(), pt.getY());
       
       SetupGnuplotFile((int)traces.aid, (int)traces.bid, (int)traces.cid);
       

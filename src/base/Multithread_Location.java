@@ -10,6 +10,7 @@ public class Multithread_Location extends Thread{
 	ArrayList<Point2D> b;
 	ArrayList<Point2D> c;
 	double percent = 0;
+	boolean failed = false;
 	
 	   public double TriangleSize(Point2D a, Point2D b, Point2D c) {
 			double l1 = Math.sqrt(Math.pow((a.getX()-b.getX()),2) + Math.pow((a.getY()-b.getY()),2) );   
@@ -35,11 +36,6 @@ public class Multithread_Location extends Thread{
 	   
 	   public void run() {
 			try {
-			    int smalla, smallb, smallc;
-				smalla = smallb = smallc = 0;
-				area = 1000000;
-				double iter = 0;
-				
 				ArrayList<Integer> indexB = new ArrayList<Integer>();
 				ArrayList<Integer> indexC = new ArrayList<Integer>();
 				for(int x = 0; x < b.size(); x++) {
@@ -52,6 +48,15 @@ public class Multithread_Location extends Thread{
 						}
 					}
 				}
+				if (indexB.size() == 0 || indexC.size() == 0) {
+					failed = true;
+					return;
+				}
+				
+				int smalla, smallb, smallc;
+				smalla = smallb = smallc = 0;
+				area = 1000000;
+				double iter = 0;
 				
 				double max = Math.abs(a.size()*indexB.size()*indexC.size());
 				for(int x = 0; x < a.size(); x++) {
@@ -74,8 +79,8 @@ public class Multithread_Location extends Thread{
 				}
 
 				
-				double lon = (a.get(smalla).getX() + b.get(smallb).getX() + c.get(smallc).getX())/3;
-				double lat = (a.get(smalla).getY() + b.get(smallb).getY() + c.get(smallc).getY())/3;
+				double lat = (a.get(smalla).getX() + b.get(smallb).getX() + c.get(smallc).getX())/3;
+				double lon = (a.get(smalla).getY() + b.get(smallb).getY() + c.get(smallc).getY())/3;
 			    location = new Point2D.Double(lat,lon);
 			}
 			catch(Exception e) {
