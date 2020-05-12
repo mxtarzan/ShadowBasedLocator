@@ -5,8 +5,7 @@ public class Picture {
 	public double time;
 	public double height;
 	public double shadowlength;
-	// days in each month jan  feb mar apr may jun jul aug sep oct nov dec
-	
+	//simple picture class that holds the date time height of the object and length of the shadow
 	public Picture(double d, double t, double h, double s) {
 		date = d;
 		time = t;

@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public class TraceApprox {
+	//instance variables
 	ArrayList<Point2D> a;
 	ArrayList<Point2D> b;
 	ArrayList<Point2D> c;
@@ -12,15 +13,14 @@ public class TraceApprox {
 	long cid;
 	
 	public TraceApprox(Frontend F, boolean print) {
-		
+		//create a picture for each of the entries in the array list data and populate it 
 		ArrayList<Picture> pics = new ArrayList<Picture>();
 	    for (int i = 0; i < F.data.size(); i++) {
 	    	double info[] = F.data.get(i);
 	    	pics.add(new Picture(info[0], info[1], info[2], info[3]));
 	    }
 
-
-	      
+	    //multithread each picture 
 	    ArrayList<Multithread_Trace> threads = new ArrayList<Multithread_Trace>();
 	    for (int i = 0; i < pics.size(); i++) {
 	    	threads.add(new Multithread_Trace(pics.get(i)));
@@ -28,7 +28,7 @@ public class TraceApprox {
 	    }
 	    
 	    System.out.println("Trace Threads Running");
-	    
+	    //if show progress is true print the current progress
 	    if(print) {
 	    	double oldpercent = 0;
 	    	while(true) {
@@ -57,6 +57,7 @@ public class TraceApprox {
 	    		}
 	    	}
 	    }
+	    //wait till the threads have all finished
 	    try { 
 	    	for(int i = 0; i < threads.size(); i++) {
 	    		threads.get(i).join();
@@ -67,7 +68,8 @@ public class TraceApprox {
 	    } 
 	      
 	    System.out.println("Trace Threads Finished");
-	       
+	    //assign the the infomation from each thread to local vairables instead of returning them
+	    //also save each thread id.
 	    a = threads.get(0).trace;
 	    b = threads.get(1).trace;
 	    c = threads.get(2).trace;

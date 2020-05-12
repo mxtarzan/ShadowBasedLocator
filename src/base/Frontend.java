@@ -11,9 +11,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-
+/*
+ * This is the Shadow based locator frontend code
+ * It will allow the users to click and upload and image to the screen
+ * then set the time and date the image was taken if the metadata is not availble
+ * for that then they will be blank. This is adjested for UTC time based on the longitiude.
+ */
 public class Frontend{
-	
+	/*
+	 * instance variables
+	 */
    JFrame frame;   
    JLabel picLabel;
    JPanel pane;
@@ -29,11 +36,13 @@ public class Frontend{
    static String DatesD[];
 
    public boolean isOpen;
-
+   /*
+    * takes not parameters and returns and and Arraylist of arrays of doubles
+    */
    public Frontend() throws IOException {
 	   
-	   SetupFrame();
-	   
+	  SetupFrame();
+	  //init the window 
 	  frame = new JFrame();
 
 	  JFrame.setDefaultLookAndFeelDecorated(true); 
@@ -41,44 +50,46 @@ public class Frontend{
 	  
 	  grid = new GridBagConstraints();
 	  pane = new JPanel(new GridBagLayout());
-	  
+	  //top blank bar
       JLabel spacer = new JLabel(" ");
       grid.gridx = 0;
       grid.gridy = 0;
       pane.add(spacer, grid);
-	  
+	  //instructions
 	  JLabel Title = new JLabel("Please get measurements at three different times");
       grid.gridx = 0;
       grid.gridy = 1;
       grid.gridwidth = 4;
       pane.add(Title, grid);
       grid.gridwidth = 1;
-      
+      //instructions
       JLabel label1 = new JLabel("Input:");
       grid.gridx = 0;
       grid.gridy = 2;
       pane.add(label1, grid);
-      
+      //instructions
       JLabel label2 = new JLabel("Time");
       grid.gridx = 1;
       grid.gridy = 2;
       pane.add(label2, grid);
-      
+      //instructions
       JLabel label3 = new JLabel("Month");
       grid.gridx = 2;
       grid.gridy = 2;
       pane.add(label3, grid);
-      
+      //instructions
       JLabel label4 = new JLabel("Day");
       grid.gridx = 3;
       grid.gridy = 2;
       pane.add(label4, grid);
-      
+      //instructions
       JLabel m1 = new JLabel("When it was taken: ");
       grid.gridx = 0;
       grid.gridy = 3;
       pane.add(m1, grid);
-      
+      /*
+       *these will be the boxes that the user will modify to fit the time the image was taken
+       */
       JComboBox<String> t1 = new JComboBox<String>(Times);
       grid.gridx = 1;
       grid.gridy = 3;
@@ -93,7 +104,8 @@ public class Frontend{
       grid.gridx = 3;
       grid.gridy = 3;
       pane.add(dd1, grid);
-      
+      //save the given boxes into an array and adds it to the arraylist called data
+      //this also clears the screen and resets the path
       JButton storeB = new JButton("Store Data");
       storeB.addActionListener(new ActionListener() {	
     	  public void actionPerformed(ActionEvent e){  
@@ -117,7 +129,7 @@ public class Frontend{
       grid.gridx = 0;
       grid.gridy = 4;
       pane.add(storeB, grid);     
-      
+      //used to search through the users directories and find an image
       JButton filesystemB = new JButton("Import Image");
       filesystemB.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e){  
@@ -129,6 +141,7 @@ public class Frontend{
     		   } catch (IOException e1) {
     			   e1.printStackTrace();
     		   }
+    		   System.out.println(j.getSelectedFile().toString());
 			   String s = "";
 			   try {
     				Process p = Runtime.getRuntime().exec("identify -verbose " + j.getSelectedFile().toString());
@@ -158,7 +171,8 @@ public class Frontend{
       grid.gridx = 1;
       grid.gridy = 4;
       pane.add(filesystemB, grid);
-      
+      //when the users has finished this will send the data back to the main program 
+      // this will also hide the frame window
       JButton exitB = new JButton("Done");
       exitB.addActionListener(new ActionListener() {	
     	  public void actionPerformed(ActionEvent e){ 
@@ -212,21 +226,21 @@ public class Frontend{
       grid.gridy = 4;
       grid.gridwidth = 2;
       pane.add(exitB, grid);
-
+      //instructions for measuring the images object and shadow
 	  JLabel Instr1 = new JLabel("Click top then bottem of the object then the edge of shadow");
       grid.gridx = 0;
       grid.gridy = 5;
       grid.gridwidth = 4;
       pane.add(Instr1, grid);
       grid.gridwidth = 1;
-      
+      //instructions for measuring the images object and shadow
 	  JLabel Instr2 = new JLabel("Right click to reset lines");
       grid.gridx = 0;
       grid.gridy = 6;
       grid.gridwidth = 4;
       pane.add(Instr2, grid);
       grid.gridwidth = 1;
-      
+      //add all the buttons and boxes to the window
       frame.add(pane);
 
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -239,12 +253,17 @@ public class Frontend{
       frame.addMouseListener(mouseHandler);
       frame.addMouseMotionListener(mouseHandler);
    } 
-   
+   /*
+    * add a visual line graph on the screen of where the user has clicked 
+    * left click will add a new point to the path and right click will reset.
+    */
+  
    private class MouseHandler extends MouseAdapter {
 
        @Override
        public void mousePressed(MouseEvent e) {
     	   	if(SwingUtilities.isLeftMouseButton(e)){
+    	   		//the path should not exced 3 points
     	   		if(path.size() < 3) {
     	   			Point p = e.getPoint();
     	   			System.out.println("mouse left clicked " + p.x + " " + p.y);
@@ -253,9 +272,11 @@ public class Frontend{
     	   			g.setStroke(new BasicStroke(3));
     	   			g.setColor(Color.gray);
     	   			g.drawOval(p.x-3, p.y-3, 6, 6);
+    	   			
     	   			if(path.size() >= 2 && path.size() < 4) {
     	   				Point start = path.get(path.size()-2);
     	   				Point end = path.get(path.size()-1);
+    	   				//if it is the last point change the color of the stoke making two different line colors
     	   				if(path.size() < 3) {
     	   					g.setColor(Color.red);
     	   				}
@@ -266,6 +287,7 @@ public class Frontend{
     	   			}
     	   		}
             }
+    	   	//clear the path
     	   	if (SwingUtilities.isRightMouseButton(e)){
     	   		System.out.println("mouse right clicked");
     	   		if(path.size()!=0) {
@@ -275,13 +297,14 @@ public class Frontend{
     	   	}
         }
    }
-   
+   // fill all the boxed with temporary input to allow easy user usage.
    void SetupFrame() {
 	   Times = new String[24*12];
 	   DatesM = new String[12];
 	   DatesD = new String[31];
 	   isOpen = true;
 	   int count = 0;
+	   //set the and array full of strings with the time with am and pm
 	   for (int i = 0; i < 24; i++) {
 		   for (int j = 0; j < 60; j += 5) {
 			   boolean after12 = false;
@@ -312,17 +335,20 @@ public class Frontend{
 		   }
 	   }
 	   count = 0;
+	   //set the numbers for the month
 	   for(int i = 0; i < 12; i++) {
 		   DatesM[count] = Integer.toString(i+1);
 		   count++;
        }
 	   count = 0;
+	   //sets the numbers for the day
 	   for(int i = 0; i < 31; i++) {
 		   DatesD[count] = Integer.toString(i+1);
 		   count++;
        }
    }
-   
+   //parse the text box with time to remove the am/pm and : and
+   //convert the time to a double from 0 to 24
    double timetodouble(String time) {
 	    char tm = time.charAt(time.length()-2);
 		time = time.substring(0, time.length()-2);
@@ -337,6 +363,7 @@ public class Frontend{
 	    }
 	    	return newtime;
    }
+   //parse the month and date to get the day of the year.
    double datetodouble(String m, String d) {
 	   int months[]= {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	   int totalmonthdays = 0;
@@ -346,9 +373,10 @@ public class Frontend{
 		double date = Double.parseDouble(d) + totalmonthdays;
 		return date;
    }
+   //reads meta data from the image and corrects the time and date from that.
    void parseimagedata(JComboBox<String> t1, JComboBox<String> dm1, JComboBox<String> dd1,  String s) {
 	   String info;
-	   String[] first = s.split("DateTimeDigitized: ");
+	   String[] first = s.split("exif:DateTimeDigitized:");
 	   if(first.length == 1) {
 		   System.out.println("Unable to get time and date from image");
 		   return;
@@ -429,6 +457,7 @@ public class Frontend{
 	   dd1.addItem(Integer.toString(dd));
 	   dd1.setSelectedItem(Integer.toString(dd));
    }
+   //resize the image if it is bigger than 500 pixels wide
    BufferedImage resizeImage(BufferedImage img) {
 	   if(img.getWidth() <= 500)return img;
 	   BufferedImage resized = resize(img);
